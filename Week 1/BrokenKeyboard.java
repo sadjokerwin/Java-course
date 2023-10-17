@@ -1,5 +1,7 @@
 public class BrokenKeyboard {
     public static int calculateFullyTypedWords(String message, String brokenKeys) {
+        if(message.isEmpty()) return 0;
+
         String[] tokens;
         if (message.split("\\s+").length == 0) return 0;
         else tokens = message.trim().split("\\s+");
