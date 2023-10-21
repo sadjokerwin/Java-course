@@ -12,7 +12,7 @@ public interface StockPurchase {
     /**
      * @return the timestamp when the purchase was made
      */
-    default LocalDateTime getPurchaseTimestamp(){return LocalDateTime.now();}
+    LocalDateTime getPurchaseTimestamp();
 
     /**
      * @return the price per unit of stock at the time of purchase rounded to two decimal places
