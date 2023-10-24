@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.trading.price;
 
-public interface PriceChartAPI{
+public interface PriceChartAPI {
 
     /**
      * Gets the current price of the stock identified by the provided stock ticker rounded to two decimal places
@@ -22,5 +22,7 @@ public interface PriceChartAPI{
      * number, return false.
      */
     boolean changeStockPrice(String stockTicker, int percentChange);
+
+    boolean isFromSupportedStocks(String[] stocks, String stockTicker);
 
 }

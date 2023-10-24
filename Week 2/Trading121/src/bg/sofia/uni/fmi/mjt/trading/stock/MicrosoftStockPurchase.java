@@ -35,7 +35,7 @@ public class MicrosoftStockPurchase implements StockPurchase{
     @Override
     public String getStockTicker()
     {
-        return "GOOG";
+        return "MSFT";
     }
 
 }
