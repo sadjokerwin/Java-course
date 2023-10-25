@@ -5,7 +5,7 @@ public class PriceChart implements PriceChartAPI {
     private double googleStockPrice;
     private double amazonStockPrice;
 
-    PriceChart(double microsoftStockPrice, double googleStockPrice, double amazonStockPrice) {
+    public PriceChart(double microsoftStockPrice, double googleStockPrice, double amazonStockPrice) {
         this.microsoftStockPrice = microsoftStockPrice;
         this.googleStockPrice = googleStockPrice;
         this.amazonStockPrice = amazonStockPrice;

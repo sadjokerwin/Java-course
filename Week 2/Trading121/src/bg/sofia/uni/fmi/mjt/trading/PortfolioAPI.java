@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 
 public interface PortfolioAPI {
 
+    StockPurchase attemptPurchase(String stockTicker, int quantity);
+
     /**
      * Purchases the provided quantity of stocks with the provided ticker. The budget in the portfolio should
      * decrease by the corresponding amount. If a stock is on-demand then naturally its price increases.
@@ -49,5 +51,7 @@ public interface PortfolioAPI {
      * @return the owner of the portfolio
      */
     String getOwner();
+
+
 
 }
