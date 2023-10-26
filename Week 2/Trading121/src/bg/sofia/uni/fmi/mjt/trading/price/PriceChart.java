@@ -30,6 +30,7 @@ public class PriceChart implements PriceChartAPI {
         return returnValue;
     }
 
+
     @Override
     public boolean isFromSupportedStocks(String[] stocks, String stockTicker) {
         if (stockTicker == null) return false;
@@ -55,10 +56,15 @@ public class PriceChart implements PriceChartAPI {
             return false;
         else {
             switch (stockTicker) {
-                case "MSFT" -> microsoftStockPrice += (double)percentChange / 100;
-                case "AMZ" -> amazonStockPrice += (double)percentChange / 100;
-                case "GOOG" -> googleStockPrice += (double)(percentChange / 100);
-
+                case "MSFT": microsoftStockPrice += Math.round((double)percentChange / 100*microsoftStockPrice* 100.0) / 100.0;
+                microsoftStockPrice = Math.round(microsoftStockPrice*100.0)/100.0;
+                break;
+                case "AMZ": amazonStockPrice += Math.round((double)percentChange / 100*amazonStockPrice* 100.0) / 100.0;
+                   amazonStockPrice= Math.round(amazonStockPrice*100.0)/100.0;
+                    break;
+                case "GOOG": googleStockPrice +=Math.round((double)percentChange / 100*googleStockPrice* 100.0) / 100.0;
+                googleStockPrice = Math.round(googleStockPrice*100.0)/100.0;
+                break;
             }
             return true;
         }

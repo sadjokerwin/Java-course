@@ -23,6 +23,7 @@ public interface PriceChartAPI {
      */
     boolean changeStockPrice(String stockTicker, int percentChange);
 
+
     boolean isFromSupportedStocks(String[] stocks, String stockTicker);
 
 }

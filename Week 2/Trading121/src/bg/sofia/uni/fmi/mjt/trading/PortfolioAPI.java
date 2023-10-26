@@ -26,7 +26,14 @@ public interface PortfolioAPI {
      * @return all stock purchases made so far.
      */
     StockPurchase[] getAllPurchases();
-
+    /**
+     * @return numberOfStocks
+     */
+    int getNumberOfStocks();
+    /**
+     * @return numberOfStocksPurchases
+     */
+    int getNumberOfStocksPurchases();
     /**
      * Retrieves purchases made in the provided inclusive time interval
      *

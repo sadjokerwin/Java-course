@@ -10,16 +10,19 @@ import java.time.LocalDateTime;
 
 public class Portfolio implements PortfolioAPI {
     private final String owner;
-    private double budget;
     private final int maxSize;
     private final PriceChartAPI priceChart;
-    private StockPurchase[] stockPurchases;
+    private double budget;
+    private final StockPurchase[] stockPurchases;
+    private int numberOfStocks;
+    private int numberOfStockPurchases;
 
     public Portfolio(String owner, PriceChartAPI priceChart, double budget, int maxSize) {
         this.owner = owner;
         this.priceChart = priceChart;
         this.budget = budget;
         this.maxSize = maxSize;
+        this.stockPurchases = new StockPurchase[maxSize];
     }
 
     public Portfolio(String owner, PriceChartAPI priceChart, StockPurchase[] stockPurchases, double budget, int maxSize) {
@@ -38,18 +41,35 @@ public class Portfolio implements PortfolioAPI {
     @Override
     public StockPurchase attemptPurchase(String stockTicker, int quantity) {
         double purchaseTotal = Math.round(quantity * priceChart.getCurrentPrice(stockTicker) * 100.0) / 100.0;
-        if (purchaseTotal < 0 ||quantity <= 0 || maxSize == 0 || maxSize - quantity < 0) return null;
+        StockPurchase toBeAdded;
+        if (purchaseTotal < 0 || quantity <= 0 || maxSize == 0 || numberOfStocks + quantity > maxSize) return null;
         else {
             budget -= purchaseTotal;
-            return switch (stockTicker) {
-                case "AMZ" ->
-                        new AmazonStockPurchase(quantity, LocalDateTime.now(), priceChart.getCurrentPrice(stockTicker));
-                case "GOOG" ->
-                        new GoogleStockPurchase(quantity, LocalDateTime.now(), priceChart.getCurrentPrice(stockTicker));
-                case "MSFT" ->
-                        new MicrosoftStockPurchase(quantity, LocalDateTime.now(), priceChart.getCurrentPrice(stockTicker));
-                default -> null;
-            };
+            numberOfStocks += quantity;
+//            return
+            switch (stockTicker) {
+                case "AMZ":
+                    if (priceChart.changeStockPrice(stockTicker, 5))
+                        toBeAdded = new AmazonStockPurchase(quantity, LocalDateTime.now(), priceChart.getCurrentPrice(stockTicker));
+                    else toBeAdded = null;
+                    break;
+                case "GOOG":
+                    if (priceChart.changeStockPrice(stockTicker, 5))
+                        toBeAdded = new GoogleStockPurchase(quantity, LocalDateTime.now(), priceChart.getCurrentPrice(stockTicker));
+                    else toBeAdded = null;
+                    break;
+                case "MSFT":
+                    if (priceChart.changeStockPrice(stockTicker, 5))
+                        toBeAdded = new MicrosoftStockPurchase(quantity, LocalDateTime.now(), priceChart.getCurrentPrice(stockTicker));
+                    else toBeAdded = null;
+                    break;
+                default:
+                    return null;
+            }
+            if (toBeAdded != null) {
+                stockPurchases[numberOfStockPurchases++] = toBeAdded;
+                return toBeAdded;
+            } else return null;
         }
     }
 
@@ -80,6 +100,22 @@ public class Portfolio implements PortfolioAPI {
     }
 
     /**
+     * @return numberOfStocks
+     */
+    @Override
+    public int getNumberOfStocks() {
+        return numberOfStocks;
+    }
+
+    /**
+     * @return numberOfStocksPurchases
+     */
+    @Override
+    public int getNumberOfStocksPurchases() {
+        return numberOfStockPurchases;
+    }
+
+    /**
      * Retrieves purchases made in the provided inclusive time interval
      *
      * @param startTimestamp the start timestamp of the interval
@@ -89,22 +125,24 @@ public class Portfolio implements PortfolioAPI {
     @Override
     public StockPurchase[] getAllPurchases(LocalDateTime startTimestamp, LocalDateTime endTimestamp) {
         int counter = 0;
-        for (StockPurchase iterStock : stockPurchases) {
+        for (int i = 0; i < numberOfStockPurchases; i++) {
 
-            if (iterStock.getPurchaseTimestamp().isBefore(startTimestamp)) {
+            if (stockPurchases[i].getPurchaseTimestamp().isBefore(startTimestamp)) {
                 counter++;
                 continue;
             } else break;
         }
-        int helperPurchasesSize = maxSize - counter;
-        StockPurchase[] helperPurchases = new StockPurchase[helperPurchasesSize];
+        StockPurchase[] helperPurchases = new StockPurchase[numberOfStockPurchases - counter];
         StockPurchase iterStock = stockPurchases[counter];
         int helperCounter = 0;
         while (!iterStock.getPurchaseTimestamp().isAfter(endTimestamp)) {
             helperPurchases[helperCounter++] = stockPurchases[counter++];
             iterStock = stockPurchases[counter];
         }
-        return helperPurchases;
+        if (helperCounter == 0 && counter == 0)
+            return null;
+        else
+            return helperPurchases;
 
     }
 
