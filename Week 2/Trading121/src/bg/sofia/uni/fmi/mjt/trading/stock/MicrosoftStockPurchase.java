@@ -10,7 +10,8 @@ public class MicrosoftStockPurchase implements StockPurchase{
     {
         this.quantity = quantity;
         this.purchaseTimestamp = purchaseTimestamp;
-        this.pricePerUnit = purchasePricePerUnit;
+        this.pricePerUnit = Math.round(purchasePricePerUnit * 100.0) / 100.0;
+
     }
     @Override
     public int getQuantity()

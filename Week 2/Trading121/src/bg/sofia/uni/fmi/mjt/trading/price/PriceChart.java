@@ -6,9 +6,9 @@ public class PriceChart implements PriceChartAPI {
     private double amazonStockPrice;
 
     public PriceChart(double microsoftStockPrice, double googleStockPrice, double amazonStockPrice) {
-        this.microsoftStockPrice = microsoftStockPrice;
-        this.googleStockPrice = googleStockPrice;
-        this.amazonStockPrice = amazonStockPrice;
+        this.microsoftStockPrice = Math.round(microsoftStockPrice * 100.0) / 100.0;
+        this.googleStockPrice = Math.round(googleStockPrice * 100.0) / 100.0;
+        this.amazonStockPrice = Math.round(amazonStockPrice * 100.0) / 100.0;
     }
 
     /**
@@ -20,6 +20,7 @@ public class PriceChart implements PriceChartAPI {
      */
     @Override
     public double getCurrentPrice(String stockTicker) {
+        if (stockTicker == null) return 0d;
         double returnValue;
         switch (stockTicker) {
             case "MSFT" -> returnValue = microsoftStockPrice;
@@ -56,17 +57,20 @@ public class PriceChart implements PriceChartAPI {
             return false;
         else {
             switch (stockTicker) {
-                case "MSFT": microsoftStockPrice += Math.round((double)percentChange / 100*microsoftStockPrice* 100.0) / 100.0;
-                microsoftStockPrice = Math.round(microsoftStockPrice*100.0)/100.0;
-                break;
-                case "AMZ": amazonStockPrice += Math.round((double)percentChange / 100*amazonStockPrice* 100.0) / 100.0;
-                   amazonStockPrice= Math.round(amazonStockPrice*100.0)/100.0;
-                    break;
-                case "GOOG": googleStockPrice +=Math.round((double)percentChange / 100*googleStockPrice* 100.0) / 100.0;
-                googleStockPrice = Math.round(googleStockPrice*100.0)/100.0;
-                break;
+                case "MSFT":
+                    microsoftStockPrice += Math.round((double) percentChange / 100 * microsoftStockPrice * 100.0) / 100.0;
+                    microsoftStockPrice = Math.round(microsoftStockPrice * 100.0) / 100.0;
+                    return true;
+                case "AMZ":
+                    amazonStockPrice += Math.round((double) percentChange / 100 * amazonStockPrice * 100.0) / 100.0;
+                    amazonStockPrice = Math.round(amazonStockPrice * 100.0) / 100.0;
+                    return true;
+                case "GOOG":
+                    googleStockPrice += Math.round((double) percentChange / 100 * googleStockPrice * 100.0) / 100.0;
+                    googleStockPrice = Math.round(googleStockPrice * 100.0) / 100.0;
+                    return true;
             }
-            return true;
         }
+        return true;
     }
 }

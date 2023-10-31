@@ -12,8 +12,8 @@ public class Portfolio implements PortfolioAPI {
     private final String owner;
     private final int maxSize;
     private final PriceChartAPI priceChart;
-    private double budget;
     private final StockPurchase[] stockPurchases;
+    private double budget;
     private int numberOfStocks;
     private int numberOfStockPurchases;
 
@@ -22,6 +22,7 @@ public class Portfolio implements PortfolioAPI {
         this.priceChart = priceChart;
         this.budget = budget;
         this.maxSize = maxSize;
+        this.numberOfStockPurchases = 0;
         this.stockPurchases = new StockPurchase[maxSize];
     }
 
@@ -33,34 +34,41 @@ public class Portfolio implements PortfolioAPI {
         int counter = 0;
         this.stockPurchases = new StockPurchase[maxSize];
         for (StockPurchase iter : stockPurchases) {
-
-            this.stockPurchases[counter++] = iter;
+            if (iter != null)
+                this.stockPurchases[counter++] = buyStock(iter.getStockTicker(), iter.getQuantity());
+            else break;
         }
+        numberOfStockPurchases = counter;
     }
 
     @Override
     public StockPurchase attemptPurchase(String stockTicker, int quantity) {
-        double purchaseTotal = Math.round(quantity * priceChart.getCurrentPrice(stockTicker) * 100.0) / 100.0;
+        if (stockTicker == null ) return null;
+        double purchaseTotal = Math.round(quantity* priceChart.getCurrentPrice(stockTicker) * 100.0) / 100.0;
         StockPurchase toBeAdded;
-        if (purchaseTotal < 0 || quantity <= 0 || maxSize == 0 || numberOfStocks + quantity > maxSize) return null;
+        double price = priceChart.getCurrentPrice(stockTicker);
+
+        if (quantity <= 0 || numberOfStocks + quantity > maxSize || budget - purchaseTotal < 0)
+            return null;
         else {
-            budget -= purchaseTotal;
-            numberOfStocks += quantity;
-//            return
+            if (purchaseTotal != 0d) {
+                budget -= purchaseTotal;
+                numberOfStocks += quantity;
+            }
             switch (stockTicker) {
                 case "AMZ":
                     if (priceChart.changeStockPrice(stockTicker, 5))
-                        toBeAdded = new AmazonStockPurchase(quantity, LocalDateTime.now(), priceChart.getCurrentPrice(stockTicker));
+                        toBeAdded = new AmazonStockPurchase(quantity, LocalDateTime.now(), price);
                     else toBeAdded = null;
                     break;
                 case "GOOG":
                     if (priceChart.changeStockPrice(stockTicker, 5))
-                        toBeAdded = new GoogleStockPurchase(quantity, LocalDateTime.now(), priceChart.getCurrentPrice(stockTicker));
+                        toBeAdded = new GoogleStockPurchase(quantity, LocalDateTime.now(), price);
                     else toBeAdded = null;
                     break;
                 case "MSFT":
                     if (priceChart.changeStockPrice(stockTicker, 5))
-                        toBeAdded = new MicrosoftStockPurchase(quantity, LocalDateTime.now(), priceChart.getCurrentPrice(stockTicker));
+                        toBeAdded = new MicrosoftStockPurchase(quantity, LocalDateTime.now(), price);
                     else toBeAdded = null;
                     break;
                 default:
@@ -124,26 +132,36 @@ public class Portfolio implements PortfolioAPI {
      */
     @Override
     public StockPurchase[] getAllPurchases(LocalDateTime startTimestamp, LocalDateTime endTimestamp) {
-        int counter = 0;
-        for (int i = 0; i < numberOfStockPurchases; i++) {
+        if (numberOfStockPurchases == 0 || stockPurchases[0] == null) return new StockPurchase[0];
+        else if (stockPurchases[0].getPurchaseTimestamp().isAfter(endTimestamp) || stockPurchases[numberOfStockPurchases - 1].getPurchaseTimestamp().isBefore(startTimestamp))
+            return new StockPurchase[0];
+        else {
 
-            if (stockPurchases[i].getPurchaseTimestamp().isBefore(startTimestamp)) {
-                counter++;
-                continue;
-            } else break;
-        }
-        StockPurchase[] helperPurchases = new StockPurchase[numberOfStockPurchases - counter];
-        StockPurchase iterStock = stockPurchases[counter];
-        int helperCounter = 0;
-        while (!iterStock.getPurchaseTimestamp().isAfter(endTimestamp)) {
-            helperPurchases[helperCounter++] = stockPurchases[counter++];
-            iterStock = stockPurchases[counter];
-        }
-        if (helperCounter == 0 && counter == 0)
-            return null;
-        else
+            int counter = 0;
+            int firstOccur = 0;
+            for (int i = 0; i < numberOfStockPurchases; i++) {
+
+                if (stockPurchases[i]!=null && stockPurchases[i].getPurchaseTimestamp().isBefore(startTimestamp) && stockPurchases[i].getPurchaseTimestamp().equals(startTimestamp)) {
+                    counter++;
+                } else {firstOccur = i;
+                    break;
+                }
+            }
+            for (int i = numberOfStockPurchases; i > 0; i--) {
+
+                if (stockPurchases[i]!=null && stockPurchases[i].getPurchaseTimestamp().isAfter(endTimestamp)&& stockPurchases[i].getPurchaseTimestamp().equals(endTimestamp)) {
+                    counter++;
+                } else break;
+            }
+            int sizeOfNewArray = numberOfStockPurchases - counter;
+            StockPurchase[] helperPurchases = new StockPurchase[sizeOfNewArray];
+            for (int i = 0; i < sizeOfNewArray; i++) {
+                helperPurchases[i] = stockPurchases[firstOccur++];
+
+            }
             return helperPurchases;
 
+        }
     }
 
     /**
@@ -153,8 +171,9 @@ public class Portfolio implements PortfolioAPI {
     @Override
     public double getNetWorth() {
         double netWorth = 0;
-        for (StockPurchase iter : stockPurchases) {
-            netWorth += Math.round(priceChart.getCurrentPrice(iter.getStockTicker()) * iter.getQuantity() * 100.0) / 100.0;
+        if (numberOfStockPurchases == 0) return 0d;
+        for (int i = 0; i < numberOfStockPurchases; i++) {
+            netWorth += Math.round(priceChart.getCurrentPrice(stockPurchases[i].getStockTicker()) * stockPurchases[i].getQuantity() * 100.0) / 100.0;
         }
         return netWorth;
     }
