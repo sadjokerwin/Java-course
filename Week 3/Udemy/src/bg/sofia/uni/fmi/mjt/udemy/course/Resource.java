@@ -6,6 +6,11 @@ public class Resource implements Completable {
     private String name;
     private ResourceDuration duration;
     private int completionPercentage;
+    public Resource(String name, ResourceDuration duration)
+    {
+        this.name = name;
+        this.duration = duration;
+    }
     /**
      * Returns the resource name.
      */
@@ -17,14 +22,6 @@ public class Resource implements Completable {
      */
     public ResourceDuration getDuration() {
         return duration;
-    }
-    /**
-     * Returns true if and only if the course is completed.
-     */
-    @Override
-    public boolean isCompleted()
-    {
-        return completionPercentage == 100;
     }
 
     /**
