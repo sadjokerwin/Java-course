@@ -1,6 +1,17 @@
 package bg.sofia.uni.fmi.mjt.udemy.course;
 
-public class Course implements Completable, Purchasable{/**
+import bg.sofia.uni.fmi.mjt.udemy.course.duration.CourseDuration;
+import bg.sofia.uni.fmi.mjt.udemy.course.duration.ResourceDuration;
+
+public class Course implements Completable, Purchasable{
+    private String name;
+    private String description;
+    private double price;
+    private Category category;
+    private Resource[] content;
+    private CourseDuration totalTime;
+
+    /**
  * Returns the name of the course.
  */
 public String getName() {
