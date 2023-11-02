@@ -9,8 +9,9 @@ public class Course implements Completable, Purchasable {
     private final String description;
     private final double price;
     private final Category category;
-    private Resource[] content;
     private final CourseDuration totalTime;
+    private final Resource[] content;
+    private final int numOfResources;
     private boolean isPurchased;
 
     public Course(String name, String description, double price, Resource[] content, Category category) {
@@ -25,9 +26,10 @@ public class Course implements Completable, Purchasable {
             this.content[counter++] = new Resource(iter.getName(), iter.getDuration());
             duration[counter] = new ResourceDuration(iter.getDuration().minutes());
         }
+        numOfResources = counter;
         counter = 0;
         this.totalTime = CourseDuration.of(duration);
-        this.isPurchased = false; 
+        this.isPurchased = false;
         this.category = category;
 
     }
@@ -75,6 +77,13 @@ public class Course implements Completable, Purchasable {
     }
 
     /**
+     * Returns the number of Resources.
+     */
+    public int getNumOfResources()
+    {
+        return numOfResources;
+    }
+    /**
      * Returns true if and only if the course is completed.
      */
     @Override
@@ -83,15 +92,38 @@ public class Course implements Completable, Purchasable {
             if (!iter.isCompleted()) return false;
         return true;
     }
+
     /**
      * Marks the object as purchased.
      */
-    void purchase();
+    @Override
+    public void purchase() {
+        isPurchased = true;
+    }
+
+    /**
+     * Returns the completion percentage of the resource.
+     * The percentage is an integer in the range [0, 100].
+     */
+    @Override
+    public int getCompletionPercentage() {
+       int counter = 0;
+        for(Resource iter : content)
+        {
+            if(iter.isCompleted()) counter++;
+        }
+        return (counter/numOfResources)*100;
+    }
 
     /**
      * Returns true if and only if the object is purchased.
      */
-    boolean isPurchased();
+
+    @Override
+    public boolean isPurchased() {
+        return isPurchased;
+    }
+
     /**
      * Completes a resource from the course.
      *
