@@ -6,10 +6,12 @@ public class Resource implements Completable {
     private final String name;
     private final ResourceDuration duration;
     private int completionPercentage;
+    private boolean isCompleteVar;
 
     public Resource(String name, ResourceDuration duration) {
         this.name = name;
         this.duration = duration;
+        this.isCompleteVar = false;
     }
 
     /**
@@ -40,13 +42,13 @@ public class Resource implements Completable {
      */
     @Override
     public boolean isCompleted() {
-        return false;
+        return isCompleteVar;
     }
 
     /**
      * Marks the resource as completed.
      */
     public void complete() {
-        completionPercentage = 100;
+        isCompleteVar = true;
     }
 }

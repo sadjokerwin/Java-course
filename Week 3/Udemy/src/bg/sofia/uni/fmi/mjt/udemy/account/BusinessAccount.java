@@ -1,20 +1,15 @@
 package bg.sofia.uni.fmi.mjt.udemy.account;
 
-import bg.sofia.uni.fmi.mjt.udemy.account.type.AccountType;
 import bg.sofia.uni.fmi.mjt.udemy.course.Category;
 import bg.sofia.uni.fmi.mjt.udemy.course.Course;
-import bg.sofia.uni.fmi.mjt.udemy.course.Resource;
-import bg.sofia.uni.fmi.mjt.udemy.exception.CourseAlreadyPurchasedException;
-import bg.sofia.uni.fmi.mjt.udemy.exception.CourseNotCompletedException;
-import bg.sofia.uni.fmi.mjt.udemy.exception.CourseNotPurchasedException;
-import bg.sofia.uni.fmi.mjt.udemy.exception.InsufficientBalanceException;
-import bg.sofia.uni.fmi.mjt.udemy.exception.MaxCourseCapacityReachedException;
 
+import bg.sofia.uni.fmi.mjt.udemy.exception.InsufficientBalanceException;
+import bg.sofia.uni.fmi.mjt.udemy.exception.CourseAlreadyPurchasedException;
+import bg.sofia.uni.fmi.mjt.udemy.exception.MaxCourseCapacityReachedException;
 
 public class BusinessAccount extends AccountBase {
     private final Category[] allowedCategories;
-    protected final int DISCOUNT_BUSINESS = 15;
-
+    protected final int DISCOUNT_BUSINESS = 20;
 
     public BusinessAccount(String username, double balance, Category[] allowedCategories) {
         super(username, balance);
@@ -48,42 +43,16 @@ public class BusinessAccount extends AccountBase {
 
         if (!isFromSupportedTypes(course)) {
             throw new IllegalArgumentException();
-        } else if (balance <= 0 || balance - (course.getPrice() - course.getPrice() * (double) DISCOUNT_BUSINESS) < 0) {
+        } else if (balance <= 0 || balance - (course.getPrice() - course.getPrice() * (double)DISCOUNT_BUSINESS) < 0) {
             throw new InsufficientBalanceException();
         } else if (isCoursePurchased(course) != null) {
             throw new CourseAlreadyPurchasedException();
-        } else if (currentNumberOfPurchsedCourses == 100) {
+        } else if (currentNumberOfPurchsedCourses == 99) {
             throw new MaxCourseCapacityReachedException();
         }
-        purchasedCourses [currentNumberOfPurchsedCourses++] = course;
-        reduceBalance(course.getPrice() * (double) DISCOUNT_BUSINESS);
+
+        purchasedCourses[currentNumberOfPurchsedCourses++] = course;
+        reduceBalance(course.getPrice() * (double)DISCOUNT_BUSINESS);
 
     }
-
-    /**
-     * Completes the whole course.
-     *
-     * @param course the course which will be completed.
-     * @param grade  the grade with which the course will be completed.
-     * @throws IllegalArgumentException    if grade is not in range [2.00, 6.00] or course is null.
-     * @throws CourseNotPurchasedException if course is not currently purchased for this account.
-     * @throws CourseNotCompletedException if there is a resource in the course which is not completed.
-     */
-    @Override
-    public void completeCourse(Course course, double grade) throws CourseNotPurchasedException, CourseNotCompletedException {
-        if (grade < 2d || grade > 6d) {
-            throw new IllegalArgumentException();
-        }
-        Course foundCourse = isCoursePurchased(course);
-        if (foundCourse == null) {
-            throw new CourseNotPurchasedException();
-        }
-        for (Resource iter : foundCourse.getContent()) {
-            if (!iter.isCompleted()) {
-                throw new CourseNotCompletedException();
-            }
-        }
-    }
-
-
 }

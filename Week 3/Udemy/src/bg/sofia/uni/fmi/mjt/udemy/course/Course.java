@@ -4,6 +4,8 @@ import bg.sofia.uni.fmi.mjt.udemy.course.duration.CourseDuration;
 import bg.sofia.uni.fmi.mjt.udemy.course.duration.ResourceDuration;
 import bg.sofia.uni.fmi.mjt.udemy.exception.ResourceNotFoundException;
 
+import java.util.Arrays;
+
 public class Course implements Completable, Purchasable {
     private final String name;
     private final String description;
@@ -79,17 +81,22 @@ public class Course implements Completable, Purchasable {
     /**
      * Returns the number of Resources.
      */
-    public int getNumOfResources()
-    {
+    public int getNumOfResources() {
         return numOfResources;
     }
+
     /**
      * Returns true if and only if the course is completed.
      */
     @Override
     public boolean isCompleted() {
-        for (Resource iter : content)
-            if (!iter.isCompleted()) return false;
+        for (int counter = 0; counter < numOfResources; counter++) {
+            if (!content[counter].isCompleted()) {
+                return false;
+            }
+        }
+//        for (Resource iter : content)
+//            if (!iter.isCompleted()) return false;
         return true;
     }
 
@@ -107,12 +114,11 @@ public class Course implements Completable, Purchasable {
      */
     @Override
     public int getCompletionPercentage() {
-       int counter = 0;
-        for(Resource iter : content)
-        {
-            if(iter.isCompleted()) counter++;
+        int counter = 0;
+        for (Resource iter : content) {
+            if (iter.isCompleted()) counter++;
         }
-        return (counter/numOfResources)*100;
+        return (counter / numOfResources) * 100;
     }
 
     /**
@@ -135,7 +141,9 @@ public class Course implements Completable, Purchasable {
         if (resourceToComplete == null) throw new IllegalArgumentException("resourceToComplete is null");
         else {
             for (Resource iter : content) {
-                if (iter.getName().equals(resourceToComplete.getName())) resourceToComplete.complete();
+                if (iter.getName().equals(resourceToComplete.getName())) {
+                    iter.complete();
+                }
                 break;
             }
             throw new ResourceNotFoundException();

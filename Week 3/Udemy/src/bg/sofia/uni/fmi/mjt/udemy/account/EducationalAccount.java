@@ -42,7 +42,7 @@ public class EducationalAccount extends AccountBase {
             throw new InsufficientBalanceException();
         } else if (isCoursePurchased(course) != null) {
             throw new CourseAlreadyPurchasedException();
-        } else if (currentNumberOfPurchsedCourses == 100) {
+        } else if (currentNumberOfPurchsedCourses == 99) {
             throw new MaxCourseCapacityReachedException();
         }
 
