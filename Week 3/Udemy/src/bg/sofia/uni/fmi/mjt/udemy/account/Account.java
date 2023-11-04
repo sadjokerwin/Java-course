@@ -2,12 +2,15 @@ package bg.sofia.uni.fmi.mjt.udemy.account;
 
 import bg.sofia.uni.fmi.mjt.udemy.course.Course;
 import bg.sofia.uni.fmi.mjt.udemy.course.Resource;
+
 import bg.sofia.uni.fmi.mjt.udemy.exception.CourseNotCompletedException;
 import bg.sofia.uni.fmi.mjt.udemy.exception.CourseNotPurchasedException;
 import bg.sofia.uni.fmi.mjt.udemy.exception.ResourceNotFoundException;
 import bg.sofia.uni.fmi.mjt.udemy.exception.CourseAlreadyPurchasedException;
 import bg.sofia.uni.fmi.mjt.udemy.exception.InsufficientBalanceException;
 import bg.sofia.uni.fmi.mjt.udemy.exception.MaxCourseCapacityReachedException;
+
+
 public interface Account {
 
     /**
