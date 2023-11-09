@@ -4,17 +4,9 @@ import bg.sofia.uni.fmi.mjt.gym.workout.Exercise;
 import bg.sofia.uni.fmi.mjt.gym.workout.Workout;
 
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.SequencedCollection;
-import java.util.SequencedMap;
+import java.util.*;
 
-public class Member implements GymMember{
+public class Member implements GymMember {
     private String name;
     private int age;
     private String personalIdNumber;
@@ -63,7 +55,7 @@ public class Member implements GymMember{
     @Override
     public void setWorkout(DayOfWeek day, Workout workout) {
         if (day == null || workout == null) {
-           throw new IllegalArgumentException("Day or workout is null");
+            throw new IllegalArgumentException("Day or workout is null");
         }
 
         trainingProgram.put(day, workout);
@@ -72,14 +64,51 @@ public class Member implements GymMember{
     @Override
     public Collection<DayOfWeek> getDaysFinishingWith(String exerciseName) {
         if (exerciseName == null || exerciseName.isEmpty()) {
-           throw new IllegalArgumentException("Exercise Name is null or empty");
+            throw new IllegalArgumentException("Exercise Name is null or empty");
         }
+
         ArrayList<DayOfWeek> result = new ArrayList<>();
+
         for (Map.Entry<DayOfWeek, Workout> iter : trainingProgram.entrySet()) {
-            if (Workout)
+            if (iter.getValue().containsByName(exerciseName)) {
+                result.add(iter.getKey());
+            }
         }
+
+        return result;
     }
 
+    @Override
+    public void addExercise(DayOfWeek day, Exercise exercise) {
+        if (day == null || exercise == null) {
+            throw new IllegalArgumentException("Day or exercise is null");
+        } else if (!trainingProgram.containsKey(day)) {
+            throw new DayOffException();
+        }
 
+        for (Map.Entry<DayOfWeek, Workout> iter : trainingProgram.entrySet()) {
+            if (iter.getKey().equals(day)) {
+                iter.getValue().addExercise(exercise);
+                return;
+            }
+        }
+
+    }
+
+    @Override
+    public void addExercises(DayOfWeek day, List<Exercise> exercises) {
+        if (day == null || exercises == null || exercises.isEmpty()) {
+            throw new IllegalArgumentException("Day or exercise is null");
+        } else if (!trainingProgram.containsKey(day)) {
+            throw new DayOffException();
+        }
+
+        for (Map.Entry<DayOfWeek, Workout> iter : trainingProgram.entrySet()) {
+            if (iter.getKey().equals(day)) {
+                iter.getValue().addExercises(exercises);
+                return;
+            }
+        }
+    }
 
 }
