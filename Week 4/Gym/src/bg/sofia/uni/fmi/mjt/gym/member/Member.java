@@ -1,10 +1,18 @@
 package bg.sofia.uni.fmi.mjt.gym.member;
 
+import bg.sofia.uni.fmi.mjt.gym.workout.Exercise;
 import bg.sofia.uni.fmi.mjt.gym.workout.Workout;
 
 import java.time.DayOfWeek;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SequencedCollection;
+import java.util.SequencedMap;
 
 public class Member implements GymMember{
     private String name;
@@ -12,7 +20,7 @@ public class Member implements GymMember{
     private String personalIdNumber;
     private Gender gender;
     private Address address;
-    private Map<DayOfWeek, Workout> trainingProgram;
+    private EnumMap<DayOfWeek, Workout> trainingProgram;
 
     public Member(Address address, String name, int age, String personalIdNumber, Gender gender) {
         this.name = name;
@@ -66,9 +74,12 @@ public class Member implements GymMember{
         if (exerciseName == null || exerciseName.isEmpty()) {
            throw new IllegalArgumentException("Exercise Name is null or empty");
         }
-
-
+        ArrayList<DayOfWeek> result = new ArrayList<>();
+        for (Map.Entry<DayOfWeek, Workout> iter : trainingProgram.entrySet()) {
+            if (Workout)
+        }
     }
+
 
 
 }
