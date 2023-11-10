@@ -16,4 +16,10 @@ public record Workout(SequencedCollection<Exercise> exercises) {
     public void addExercises(List<Exercise> exerciseList) {
         exercises.addAll(exerciseList);
     }
+
+    public void printWorkout() {
+        for (Exercise exercise : exercises) {
+            exercise.printExercise();
+        }
+    }
 }

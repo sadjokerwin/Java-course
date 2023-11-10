@@ -4,9 +4,14 @@ import bg.sofia.uni.fmi.mjt.gym.workout.Exercise;
 import bg.sofia.uni.fmi.mjt.gym.workout.Workout;
 
 import java.time.DayOfWeek;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
-public class Member implements GymMember {
+public class Member implements GymMember, Comparable<GymMember> {
     private String name;
     private int age;
     private String personalIdNumber;
@@ -20,6 +25,12 @@ public class Member implements GymMember {
         this.personalIdNumber = personalIdNumber;
         this.gender = gender;
         this.address = address;
+        this.trainingProgram = new EnumMap<DayOfWeek, Workout>(DayOfWeek.class);
+    }
+
+    @Override
+    public int compareTo(GymMember other) {
+        return this.name.compareTo(other.getName());
     }
 
     @Override
@@ -108,6 +119,13 @@ public class Member implements GymMember {
                 iter.getValue().addExercises(exercises);
                 return;
             }
+        }
+    }
+
+    public void printTrainingProgram() {
+        for (Map.Entry<DayOfWeek, Workout> iter : trainingProgram.entrySet()) {
+            System.out.println(iter.getKey());
+            iter.getValue().printWorkout();
         }
     }
 

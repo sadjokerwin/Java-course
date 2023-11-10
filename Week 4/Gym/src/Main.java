@@ -29,9 +29,16 @@ public class Main {
         Workout workout = new Workout(exercises1);
         Workout workout2 = new Workout(exercises2);
 
+        //
         Member member = new Member(new Address(12, 23), "gosheto", 19, "3215412", Gender.MALE);
+
+
         member.setWorkout(DayOfWeek.MONDAY, workout);
         member.setWorkout(DayOfWeek.TUESDAY, workout2);
+
+        member.printTrainingProgram();
+
+
 
 
     }
