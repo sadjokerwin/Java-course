@@ -1,6 +1,5 @@
 package bg.sofia.uni.fmi.mjt.gym.member;
 
-import java.net.spi.InetAddressResolver;
 import java.util.Comparator;
 
 public class MemberDistanceComparator implements Comparator<GymMember> {

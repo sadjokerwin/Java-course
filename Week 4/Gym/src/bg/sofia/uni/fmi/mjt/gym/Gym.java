@@ -2,29 +2,30 @@ package bg.sofia.uni.fmi.mjt.gym;
 
 import bg.sofia.uni.fmi.mjt.gym.member.Address;
 import bg.sofia.uni.fmi.mjt.gym.member.GymMember;
-import bg.sofia.uni.fmi.mjt.gym.member.Member;
 import bg.sofia.uni.fmi.mjt.gym.member.MemberDistanceComparator;
-import com.sun.source.tree.Tree;
 
 import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class Gym implements GymAPI{
+public class Gym implements GymAPI {
     private TreeSet<GymMember> members;
-    private int capacity;
+    private final int capacity;
     private Address address;
+    private int numberOfMembers;
 
     public Gym(int capacity, Address address) {
         this.capacity = capacity;
         this.address = address;
         this.members = new TreeSet<>(new MemberDistanceComparator(address));
+        this.numberOfMembers = 0;
     }
-
 
 
     /**
@@ -46,7 +47,7 @@ public class Gym implements GymAPI{
      */
     @Override
     public SortedSet<GymMember> getMembersSortedByName() {
-        TreeSet<GymMember> sortedByName =  new TreeSet<>(members);
+        TreeSet<GymMember> sortedByName = new TreeSet<>(members);
         return Collections.unmodifiableSortedSet(sortedByName);
     }
 
@@ -70,8 +71,12 @@ public class Gym implements GymAPI{
     public void addMember(GymMember member) throws GymCapacityExceededException {
         if (member == null) {
             throw new IllegalArgumentException("Member is null");
+        } else if (numberOfMembers == capacity) {
+            throw new GymCapacityExceededException();
         }
-        else if ()
+
+        members.add(member);
+        numberOfMembers++;
     }
 
     /**
@@ -82,7 +87,16 @@ public class Gym implements GymAPI{
      * @throws GymCapacityExceededException if the gym is full
      * @throws IllegalArgumentException     if members is null or empty
      */
-    void addMembers(Collection<GymMember> members) throws GymCapacityExceededException;
+    @Override
+    public void addMembers(Collection<GymMember> members) throws GymCapacityExceededException {
+        if (members == null || members.isEmpty()) {
+            throw new IllegalArgumentException("Members is null or empty");
+        } else if (numberOfMembers == capacity) {
+            throw new GymCapacityExceededException();
+        } else if (numberOfMembers + members.size() > capacity) throw new GymCapacityExceededException();
+
+        this.members.addAll(members);
+    }
 
     /**
      * Checks if a given member is member of the gym.
@@ -90,7 +104,14 @@ public class Gym implements GymAPI{
      * @param member - the member
      * @throws IllegalArgumentException if member is null
      */
-    boolean isMember(GymMember member);
+    @Override
+    public boolean isMember(GymMember member) {
+        if (member == null) {
+            throw new IllegalArgumentException("Members is null");
+        } else {
+            return members.contains(member);
+        }
+    }
 
     /**
      * Checks if an Exercise is trained on a given day.
@@ -99,7 +120,19 @@ public class Gym implements GymAPI{
      * @param day          - the day for which the check is done
      * @throws IllegalArgumentException if day is null or if exerciseName is null or empty
      */
-    boolean isExerciseTrainedOnDay(String exerciseName, DayOfWeek day);
+    @Override
+    public boolean isExerciseTrainedOnDay(String exerciseName, DayOfWeek day) {
+        if (exerciseName == null || exerciseName.isEmpty() || day == null) {
+            throw new IllegalArgumentException("Exercise name is null or empty or day is null");
+        } else {
+            for (GymMember iter : members) {
+                if (iter.isExerciseTrainedOnCertainDay(day, exerciseName)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 
     /**
      * Returns an unmodifiable Map representing each day and the names of the members that do this exercise on it.
@@ -108,5 +141,24 @@ public class Gym implements GymAPI{
      * @param exerciseName - the name of the exercise being done
      * @throws IllegalArgumentException if exerciseName is null or empty
      */
-    Map<DayOfWeek, List<String>> getDailyListOfMembersForExercise(String exerciseName);
+    @Override
+    public Map<DayOfWeek, List<String>> getDailyListOfMembersForExercise(String exerciseName) {
+        if (exerciseName == null || exerciseName.isEmpty()) {
+            throw new IllegalArgumentException("Exercise name is null or empty");
+        } else {
+            Map<DayOfWeek, List<String>> result = new EnumMap<>(DayOfWeek.class);
+            for (DayOfWeek day : DayOfWeek.values()) {
+                if (isExerciseTrainedOnDay(exerciseName, day)) {
+                    result.put(day, new ArrayList<>());
+                    List<String> listForDay = result.get(day);
+                    for (GymMember iter : members) {
+                        if (iter.isExerciseTrainedOnCertainDay(day, exerciseName)) {
+                            listForDay.add(iter.getName());
+                        }
+                    }
+                }
+            }
+            return Collections.unmodifiableMap(result);
+        }
+    }
 }

@@ -6,10 +6,10 @@ import bg.sofia.uni.fmi.mjt.gym.workout.Workout;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Member implements GymMember, Comparable<GymMember> {
     private String name;
@@ -129,4 +129,29 @@ public class Member implements GymMember, Comparable<GymMember> {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Member member = (Member) o;
+        return Objects.equals(personalIdNumber, member.personalIdNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(personalIdNumber);
+    }
+
+    @Override
+    public boolean isExerciseTrainedOnCertainDay(DayOfWeek day, String exerciseName) {
+        if (!trainingProgram.containsKey(day)) {
+            return false;
+        }
+        for (Map.Entry<DayOfWeek, Workout> iter : trainingProgram.entrySet()) {
+            if (iter.getKey().equals(day)) {
+                return iter.getValue().containsByNameAll(exerciseName);
+            }
+        }
+        return true;
+    }
 }

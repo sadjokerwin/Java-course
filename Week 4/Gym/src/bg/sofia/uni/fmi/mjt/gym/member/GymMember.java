@@ -78,4 +78,6 @@ public interface GymMember {
      * @throws IllegalArgumentException if day is null or exercises is null or empty
      */
     void addExercises(DayOfWeek day, List<Exercise> exercises);
+
+    boolean isExerciseTrainedOnCertainDay(DayOfWeek day, String exerciseName);
 }

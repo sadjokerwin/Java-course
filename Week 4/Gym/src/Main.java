@@ -6,25 +6,25 @@ import bg.sofia.uni.fmi.mjt.gym.workout.Workout;
 
 import java.time.DayOfWeek;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class Main {
     public static void main(String[] args) {
 
-    //write tests for Member class
+//        write tests for Member class
 
         Exercise exercise = new Exercise("Bench press", 4, 10);
-        Exercise exercise2 = new Exercise("dumbel press", 4, 10);
+        Exercise exercise2 = new Exercise("Dumbell press", 4, 10);
         Exercise exercise3 = new Exercise("Overhead press", 4, 10);
         Exercise exercise4 = new Exercise("Leg press", 4, 10);
 
         ArrayList<Exercise> exercises1 = new ArrayList<Exercise>();
         exercises1.add(exercise);
         exercises1.add(exercise2);
+        exercises1.add(exercise3);
 
         ArrayList<Exercise> exercises2 = new ArrayList<Exercise>();
-        exercises2.add(exercise3);
+//        exercises2.add(exercise3);
         exercises2.add(exercise4);
         Workout workout = new Workout(exercises1);
         Workout workout2 = new Workout(exercises2);
@@ -36,10 +36,12 @@ public class Main {
         member.setWorkout(DayOfWeek.MONDAY, workout);
         member.setWorkout(DayOfWeek.TUESDAY, workout2);
 
-        member.printTrainingProgram();
+//        member.printTrainingProgram();
+//
+        System.out.println(member.isExerciseTrainedOnCertainDay(DayOfWeek.MONDAY, "Overhead press"));
 
-
-
-
+//for (DayOfWeek day : DayOfWeek.values()) {
+//    System.out.println(day);
+//}
     }
 }
