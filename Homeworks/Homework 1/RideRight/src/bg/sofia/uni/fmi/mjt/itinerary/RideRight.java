@@ -3,12 +3,9 @@ package bg.sofia.uni.fmi.mjt.itinerary;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.CityNotKnownException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToDestinationException;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.Graph;
+import bg.sofia.uni.fmi.mjt.itinerary.graph.Node;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.SequencedCollection;
+import java.util.*;
 
 public class RideRight implements ItineraryPlanner {
     List<Journey> schedule;
@@ -17,6 +14,33 @@ public class RideRight implements ItineraryPlanner {
     public RideRight(List<Journey> schedule) {
         this.schedule = schedule;
         this.graph = new Graph(schedule);
+    }
+
+    public SequencedCollection<Journey> checkDirectTransfer(City start, City destination, Map<City, List<Journey>> graphRepr) throws NoPathToDestinationException {
+        List<Journey> citiesFromStartCity = graphRepr.get(start);
+        List<Journey> possibleJourneys = new ArrayList<>();
+
+        if (citiesFromStartCity != null) {
+            for (Journey iter : citiesFromStartCity) {
+                if (iter.to().equals(destination)) {
+                    possibleJourneys.add(iter);
+                }
+            }
+
+            possibleJourneys.sort(new Comparator<Journey>() {
+                @Override
+                public int compare(Journey o1, Journey o2) {
+                    return o1.price().compareTo(o2.price());
+                }
+            });
+            List<Journey> result = new ArrayList<>();
+            result.add(possibleJourneys.get(0));
+
+            return result;
+
+        } else {
+            throw new NoPathToDestinationException("There is no path satisfying the conditions");
+        }
     }
 
     /**
@@ -37,32 +61,29 @@ public class RideRight implements ItineraryPlanner {
         if (!graphRepr.containsKey(start) || !graphRepr.containsKey(destination)) {
             throw new CityNotKnownException("The city of departure or the city of arrival is not supported");
         } else if (!allowTransfer) {
-            List<Journey> citiesFromStartCity = graphRepr.get(start);
-            List<Journey> possibleJourneys = new ArrayList<>();
+            return checkDirectTransfer(start, destination, graphRepr);
+        } else {
+            Queue<Node> toSearch = new PriorityQueue<>();
+            Set<Node> traversed = new HashSet<>();
+            Node startNode = new Node(start, destination);
+            toSearch.add(startNode);
 
-            if (citiesFromStartCity != null) {
-                for (Journey iter : citiesFromStartCity) {
-                    if (iter.to().equals(destination)) {
-                        possibleJourneys.add(iter);
+            while (!toSearch.isEmpty()) {
+                Node currentNode = toSearch.poll();
+
+                if (currentNode.getCity().equals(destination)) {
+                    return null;
+                }
+                traversed.add(new Node(currentNode.getCity(), destination));
+
+                for (Journey iter : graphRepr.get(currentNode.getCity())) {
+                    if (traversed.contains(new Node(iter.from(), destination))) {
+                        continue;
+                    } else {
+
                     }
                 }
-
-                possibleJourneys.sort(new Comparator<Journey>() {
-                    @Override
-                    public int compare(Journey o1, Journey o2) {
-                        return o1.price().compareTo(o2.price());
-                    }
-                });
-              List<Journey> result = new ArrayList<>();
-              result.add(possibleJourneys.get(0));
-
-              return result;
-
-            } else {
-                throw new NoPathToDestinationException("There is no path satisfying the conditions");
             }
-        } else {
-            return null;
 
         }
     }
