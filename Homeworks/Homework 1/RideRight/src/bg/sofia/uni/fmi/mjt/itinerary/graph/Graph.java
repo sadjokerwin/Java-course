@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.jar.JarOutputStream;
 
 public class Graph {
     private Map<City, List<Journey>> graph;
@@ -33,5 +34,9 @@ public class Graph {
             result.append("\n");
         }
         return result.toString();
+    }
+
+    public Map<City, List<Journey>> getGraph() {
+        return graph;
     }
 }
