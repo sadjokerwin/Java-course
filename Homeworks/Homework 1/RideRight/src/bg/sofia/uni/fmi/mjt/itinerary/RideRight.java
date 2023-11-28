@@ -5,7 +5,16 @@ import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToDestinationException;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.Graph;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.Node;
 
-import java.util.*;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.SequencedCollection;
+import java.util.Set;
 
 public class RideRight implements ItineraryPlanner {
     List<Journey> schedule;
@@ -27,12 +36,7 @@ public class RideRight implements ItineraryPlanner {
                 }
             }
 
-            possibleJourneys.sort(new Comparator<Journey>() {
-                @Override
-                public int compare(Journey o1, Journey o2) {
-                    return o1.price().compareTo(o2.price());
-                }
-            });
+            possibleJourneys.sort(new JourneyComparator());
             List<Journey> result = new ArrayList<>();
             result.add(possibleJourneys.get(0));
 
@@ -63,7 +67,7 @@ public class RideRight implements ItineraryPlanner {
         } else if (!allowTransfer) {
             return checkDirectTransfer(start, destination, graphRepr);
         } else {
-            Queue<Node> toSearch = new PriorityQueue<>();
+            Queue<Node> toSearch = new PriorityQueue<>(Comparator.comparingInt(Node::getfCost));
             Set<Node> traversed = new HashSet<>();
             Node startNode = new Node(start, destination);
             toSearch.add(startNode);
@@ -77,14 +81,30 @@ public class RideRight implements ItineraryPlanner {
                 traversed.add(new Node(currentNode.getCity(), destination));
 
                 for (Journey iter : graphRepr.get(currentNode.getCity())) {
-                    if (traversed.contains(new Node(iter.from(), destination))) {
+                    Node neighbourNode = new Node(iter.from(), destination);
+
+                    if (traversed.contains(neighbourNode)) {
                         continue;
+                    }
+
+                    BigDecimal currentNeighbourPrice = currentNode.getgCost().add(BigDecimal.valueOf(neighbourNode.getfCost()).add(iter.getActualPrice()));
+
+//                    if (!toSearch.contains(neighbourNode) || currentNeighbourPrice.compareTo(neighbourNode.getgCost()) < 0) {
+//                        neighbourNode.setgCost(currentNeighbourPrice);
+//                        neighbourNode.setParent(currentNode);
+//                    }
+
+                    if (!toSearch.contains(neighbourNode)) {
+                        neighbourNode.setgCost(currentNeighbourPrice);
+                        neighbourNode.setParent(currentNode);
+                        toSearch.add(neighbourNode);
                     } else {
 
                     }
+
                 }
             }
-
+            throw new NoPathToDestinationException("There is no path satisfying the conditions");
         }
     }
 }

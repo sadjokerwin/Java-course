@@ -8,11 +8,13 @@ public class Node {
     private final City city;
     private BigDecimal gCost;
     private int hCost;
+    private Node parent;
 
     public Node(City city, City end) {
         this.city = city;
-        this.gCost = BigDecimal.valueOf(0);
+        this.gCost = BigDecimal.valueOf(Long.MAX_VALUE);
         this.hCost = calcHeur(end);
+        this.parent = null;
     }
 
     private int calcHeur(City end) {
@@ -39,4 +41,7 @@ public class Node {
         gCost = newCost;
     }
 
+    public void setParent(Node parent) {
+        this.parent = parent;
+    }
 }

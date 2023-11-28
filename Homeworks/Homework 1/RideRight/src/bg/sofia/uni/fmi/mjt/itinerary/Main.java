@@ -3,10 +3,8 @@ package bg.sofia.uni.fmi.mjt.itinerary;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.CityNotKnownException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToDestinationException;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.Graph;
-import bg.sofia.uni.fmi.mjt.itinerary.vehicle.VehicleType;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import static bg.sofia.uni.fmi.mjt.itinerary.vehicle.VehicleType.BUS;
@@ -54,6 +52,7 @@ public class Main {
         List<Journey> schedule = List.of(
                 new Journey(BUS, sofia, blagoevgrad, new BigDecimal("20")),
                 new Journey(BUS, blagoevgrad, sofia, new BigDecimal("20")),
+                new Journey(PLANE, varna, sofia, new BigDecimal("290")),
                 new Journey(BUS, sofia, plovdiv, new BigDecimal("90")),
                 new Journey(BUS, plovdiv, sofia, new BigDecimal("90")),
                 new Journey(BUS, plovdiv, kardzhali, new BigDecimal("50")),
@@ -70,15 +69,16 @@ public class Main {
                 new Journey(BUS, ruse, tarnovo, new BigDecimal("70")),
                 new Journey(BUS, varna, ruse, new BigDecimal("70")),
                 new Journey(BUS, ruse, varna, new BigDecimal("70")),
-                new Journey(PLANE, varna, burgas, new BigDecimal("200")),
                 new Journey(PLANE, burgas, varna, new BigDecimal("200")),
                 new Journey(PLANE, burgas, sofia, new BigDecimal("150")),
                 new Journey(PLANE, sofia, burgas, new BigDecimal("250")),
-                new Journey(PLANE, varna, sofia, new BigDecimal("290")),
+                new Journey(PLANE, varna, burgas, new BigDecimal("200")),
                 new Journey(PLANE, sofia, varna, new BigDecimal("300"))
         );
 
-        RideRight rideRight = new RideRight(schedule);
-        System.out.println(rideRight.findCheapestPath(varna, burgas, false));
+        Graph g1 = new Graph(schedule);
+        System.out.println(g1.printGraph());
+//        RideRight rideRight = new RideRight(schedule);
+//        System.out.println(rideRight.findCheapestPath(varna, burgas, false));
     }
 }

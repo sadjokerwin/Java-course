@@ -2,12 +2,12 @@ package bg.sofia.uni.fmi.mjt.itinerary.graph;
 
 import bg.sofia.uni.fmi.mjt.itinerary.City;
 import bg.sofia.uni.fmi.mjt.itinerary.Journey;
+import bg.sofia.uni.fmi.mjt.itinerary.JourneyComparator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.jar.JarOutputStream;
 
 public class Graph {
     private Map<City, List<Journey>> graph;
@@ -21,6 +21,10 @@ public class Graph {
 
         for (Journey iter : journeys) {
             graph.get(iter.from()).add(iter);
+        }
+
+        for (City iter : graph.keySet()) {
+            graph.get(iter).sort(new JourneyComparator());
         }
     }
 
