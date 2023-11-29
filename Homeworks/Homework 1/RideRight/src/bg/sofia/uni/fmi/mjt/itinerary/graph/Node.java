@@ -12,7 +12,8 @@ public class Node {
 
     public Node(City city, City end) {
         this.city = city;
-        this.gCost = BigDecimal.valueOf(Long.MAX_VALUE);
+//        this.gCost = BigDecimal.valueOf(Double.MAX_VALUE);
+        this.gCost = BigDecimal.valueOf(0);
         this.hCost = calcHeur(end);
         this.parent = null;
     }
@@ -43,5 +44,9 @@ public class Node {
 
     public void setParent(Node parent) {
         this.parent = parent;
+    }
+
+    public Node getParent() {
+        return parent;
     }
 }

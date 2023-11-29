@@ -4,8 +4,10 @@ import bg.sofia.uni.fmi.mjt.itinerary.exception.CityNotKnownException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToDestinationException;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.Graph;
 
+import javax.management.QueryEval;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import static bg.sofia.uni.fmi.mjt.itinerary.vehicle.VehicleType.BUS;
 import static bg.sofia.uni.fmi.mjt.itinerary.vehicle.VehicleType.PLANE;
@@ -75,10 +77,11 @@ public class Main {
                 new Journey(PLANE, varna, burgas, new BigDecimal("200")),
                 new Journey(PLANE, sofia, varna, new BigDecimal("300"))
         );
+//
+//        Graph g1 = new Graph(schedule);
+//        System.out.println(g1.printGraph());
+        RideRight rideRight = new RideRight(schedule);
+        System.out.println(rideRight.findCheapestPath(varna, kardzhali, true));
 
-        Graph g1 = new Graph(schedule);
-        System.out.println(g1.printGraph());
-//        RideRight rideRight = new RideRight(schedule);
-//        System.out.println(rideRight.findCheapestPath(varna, burgas, false));
     }
 }

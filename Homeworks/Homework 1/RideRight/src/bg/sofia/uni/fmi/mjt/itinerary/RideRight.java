@@ -4,6 +4,7 @@ import bg.sofia.uni.fmi.mjt.itinerary.exception.CityNotKnownException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToDestinationException;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.Graph;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.Node;
+import bg.sofia.uni.fmi.mjt.itinerary.vehicle.VehicleType;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -47,6 +48,28 @@ public class RideRight implements ItineraryPlanner {
         }
     }
 
+    private List<Journey> reconstructPath(Node destination, City start, City to) {
+        List<Journey> result = new ArrayList<>();
+
+        while (destination.getParent() != null) {
+            result.add(new Journey(VehicleType.BUS, destination.getParent().getCity(), destination.getCity(), BigDecimal.ONE));
+            destination = destination.getParent();
+        }
+
+        return result.reversed();
+    }
+
+    private void printPrioQueue(Queue<Node> toSearch) {
+        System.out.println("start of queue");
+        PriorityQueue<Node> copyQ = new PriorityQueue<>(toSearch);
+
+        while (!copyQ.isEmpty()) {
+            Node iter = copyQ.poll();
+            System.out.println(iter.getCity().toString() + " " + iter.getfCost());
+        }
+        System.out.println("end of queue");
+    }
+
     /**
      * Returns a sequenced collection of Journeys representing the cheapest path from the start to the destination City.
      *
@@ -71,36 +94,47 @@ public class RideRight implements ItineraryPlanner {
             Set<Node> traversed = new HashSet<>();
             Node startNode = new Node(start, destination);
             toSearch.add(startNode);
+            BigDecimal currentNeighbourPrice;
 
             while (!toSearch.isEmpty()) {
                 Node currentNode = toSearch.poll();
+                System.out.println(currentNode.getCity().toString() + currentNode.getfCost());
+                printPrioQueue(toSearch);
+                System.out.println("----");
+//                System.out.println(toSearch.size());
 
                 if (currentNode.getCity().equals(destination)) {
-                    return null;
+                    return reconstructPath(currentNode, start, destination);
                 }
                 traversed.add(new Node(currentNode.getCity(), destination));
 
                 for (Journey iter : graphRepr.get(currentNode.getCity())) {
-                    Node neighbourNode = new Node(iter.from(), destination);
+                    Node neighbourNode = new Node(iter.to(), destination);
+//                    System.out.println(neighbourNode.getCity().toString() + neighbourNode.getfCost());
 
                     if (traversed.contains(neighbourNode)) {
                         continue;
                     }
+                    if (currentNode.getCity().equals(start)) {
+                        currentNeighbourPrice = currentNode.getgCost().add(iter.getActualPrice());
+                    } else {
+                        currentNeighbourPrice = BigDecimal.valueOf(currentNode.getfCost()).add(iter.getActualPrice());
+                    }
 
-                    BigDecimal currentNeighbourPrice = currentNode.getgCost().add(BigDecimal.valueOf(neighbourNode.getfCost()).add(iter.getActualPrice()));
-
-//                    if (!toSearch.contains(neighbourNode) || currentNeighbourPrice.compareTo(neighbourNode.getgCost()) < 0) {
-//                        neighbourNode.setgCost(currentNeighbourPrice);
-//                        neighbourNode.setParent(currentNode);
-//                    }
-
-                    if (!toSearch.contains(neighbourNode)) {
+                    if (!toSearch.contains(neighbourNode) || currentNeighbourPrice.compareTo(neighbourNode.getgCost()) < 0) {
                         neighbourNode.setgCost(currentNeighbourPrice);
                         neighbourNode.setParent(currentNode);
-                        toSearch.add(neighbourNode);
-                    } else {
 
+                        if (!toSearch.contains(neighbourNode)) {
+                            toSearch.add(neighbourNode);
+                        }
                     }
+//
+//                    if (!toSearch.contains(neighbourNode)) {
+//                        neighbourNode.setgCost(currentNeighbourPrice);
+//                        neighbourNode.setParent(currentNode);
+//                        toSearch.add(neighbourNode);
+//                    }
 
                 }
             }
