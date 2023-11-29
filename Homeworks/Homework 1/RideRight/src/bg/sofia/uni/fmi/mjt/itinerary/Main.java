@@ -75,13 +75,17 @@ public class Main {
                 new Journey(PLANE, burgas, sofia, new BigDecimal("150")),
                 new Journey(PLANE, sofia, burgas, new BigDecimal("250")),
                 new Journey(PLANE, varna, burgas, new BigDecimal("200")),
-                new Journey(PLANE, sofia, varna, new BigDecimal("300"))
+                new Journey(PLANE, sofia, varna, new BigDecimal("3000"))
         );
 //
+//        System.out.println(blagoevgrad);
 //        Graph g1 = new Graph(schedule);
+
 //        System.out.println(g1.printGraph());
         RideRight rideRight = new RideRight(schedule);
-        System.out.println(rideRight.findCheapestPath(varna, kardzhali, true));
+        System.out.println(rideRight.findCheapestPath(sofia, varna, true));
+//        System.out.println(rideRight.findCheapestPath(varna, burgas, false));
+
 
     }
 }

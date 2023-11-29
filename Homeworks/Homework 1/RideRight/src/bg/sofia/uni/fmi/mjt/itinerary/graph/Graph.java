@@ -32,9 +32,11 @@ public class Graph {
         StringBuilder result = new StringBuilder();
         for (Map.Entry<City, List<Journey>> entry : graph.entrySet()) {
             result.append(entry.getKey()).append(" -> ");
+
             for (Journey edge : entry.getValue()) {
                 result.append("(").append(edge.to()).append(", ").append(edge.price()).append(") ");
             }
+
             result.append("\n");
         }
         return result.toString();

@@ -4,18 +4,9 @@ import bg.sofia.uni.fmi.mjt.itinerary.exception.CityNotKnownException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToDestinationException;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.Graph;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.Node;
-import bg.sofia.uni.fmi.mjt.itinerary.vehicle.VehicleType;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.SequencedCollection;
-import java.util.Set;
+import java.util.*;
 
 public class RideRight implements ItineraryPlanner {
     List<Journey> schedule;
@@ -48,26 +39,21 @@ public class RideRight implements ItineraryPlanner {
         }
     }
 
-    private List<Journey> reconstructPath(Node destination, City start, City to) {
+    private AbstractMap.SimpleEntry<BigDecimal, List<Journey>> reconstructPath(Node destination, City start, City to) {
         List<Journey> result = new ArrayList<>();
+        BigDecimal price = BigDecimal.ZERO;
+
+        Journey toAdd;
 
         while (destination.getParent() != null) {
-            result.add(new Journey(VehicleType.BUS, destination.getParent().getCity(), destination.getCity(), BigDecimal.ONE));
+            toAdd = new Journey(destination.getTransportFromParent(), destination.getParent().getCity(), destination.getCity(), destination.getPriceFromParent());
+            result.add(toAdd);
+            System.out.println(toAdd.getActualPrice());
+            price.add(toAdd.getActualPrice());
             destination = destination.getParent();
         }
 
-        return result.reversed();
-    }
-
-    private void printPrioQueue(Queue<Node> toSearch) {
-        System.out.println("start of queue");
-        PriorityQueue<Node> copyQ = new PriorityQueue<>(toSearch);
-
-        while (!copyQ.isEmpty()) {
-            Node iter = copyQ.poll();
-            System.out.println(iter.getCity().toString() + " " + iter.getfCost());
-        }
-        System.out.println("end of queue");
+        return new AbstractMap.SimpleEntry<>(price, result.reversed());
     }
 
     /**
@@ -85,60 +71,60 @@ public class RideRight implements ItineraryPlanner {
     public SequencedCollection<Journey> findCheapestPath(City start, City destination, boolean allowTransfer)
             throws CityNotKnownException, NoPathToDestinationException {
         Map<City, List<Journey>> graphRepr = graph.getGraph();
+        Journey directJourney = null;
+
         if (!graphRepr.containsKey(start) || !graphRepr.containsKey(destination)) {
             throw new CityNotKnownException("The city of departure or the city of arrival is not supported");
         } else if (!allowTransfer) {
-            return checkDirectTransfer(start, destination, graphRepr);
-        } else {
-            Queue<Node> toSearch = new PriorityQueue<>(Comparator.comparingInt(Node::getfCost));
-            Set<Node> traversed = new HashSet<>();
-            Node startNode = new Node(start, destination);
-            toSearch.add(startNode);
-            BigDecimal currentNeighbourPrice;
+            directJourney = checkDirectTransfer(start, destination, graphRepr).getFirst();
+        }
 
-            while (!toSearch.isEmpty()) {
-                Node currentNode = toSearch.poll();
-                System.out.println(currentNode.getCity().toString() + currentNode.getfCost());
-                printPrioQueue(toSearch);
-                System.out.println("----");
-//                System.out.println(toSearch.size());
+        Queue<Node> toSearch = new PriorityQueue<>(Comparator.comparingInt(Node::getfCost));
+        Set<City> traversed = new HashSet<>();
 
-                if (currentNode.getCity().equals(destination)) {
-                    return reconstructPath(currentNode, start, destination);
-                }
-                traversed.add(new Node(currentNode.getCity(), destination));
+        Node startNode = new Node(start, destination);
 
-                for (Journey iter : graphRepr.get(currentNode.getCity())) {
-                    Node neighbourNode = new Node(iter.to(), destination);
-//                    System.out.println(neighbourNode.getCity().toString() + neighbourNode.getfCost());
+        toSearch.add(startNode);
+        BigDecimal currentNeighbourPrice;
 
-                    if (traversed.contains(neighbourNode)) {
-                        continue;
-                    }
-                    if (currentNode.getCity().equals(start)) {
-                        currentNeighbourPrice = currentNode.getgCost().add(iter.getActualPrice());
-                    } else {
-                        currentNeighbourPrice = BigDecimal.valueOf(currentNode.getfCost()).add(iter.getActualPrice());
-                    }
+        while (!toSearch.isEmpty()) {
+            Node currentNode = toSearch.poll();
 
-                    if (!toSearch.contains(neighbourNode) || currentNeighbourPrice.compareTo(neighbourNode.getgCost()) < 0) {
-                        neighbourNode.setgCost(currentNeighbourPrice);
-                        neighbourNode.setParent(currentNode);
-
-                        if (!toSearch.contains(neighbourNode)) {
-                            toSearch.add(neighbourNode);
-                        }
-                    }
-//
-//                    if (!toSearch.contains(neighbourNode)) {
-//                        neighbourNode.setgCost(currentNeighbourPrice);
-//                        neighbourNode.setParent(currentNode);
-//                        toSearch.add(neighbourNode);
-//                    }
-
+            if (currentNode.getCity().equals(destination)) {
+                if (directJourney == null || directJourney.getActualPrice().compareTo(reconstructPath(currentNode, start, destination).getKey()) >= 0) {
+                    return reconstructPath(currentNode, start, destination).getValue();
+                } else {
+                    return checkDirectTransfer(start, destination, graphRepr);
                 }
             }
-            throw new NoPathToDestinationException("There is no path satisfying the conditions");
+
+            traversed.add(currentNode.getCity());
+
+            for (Journey iter : graphRepr.get(currentNode.getCity())) {
+                Node neighbourNode = new Node(iter.to(), destination);
+                neighbourNode.setPriceFromParent(iter.price());
+                neighbourNode.setTransportFromParent(iter.vehicleType());
+
+                if (traversed.contains(neighbourNode.getCity())) {
+                    continue;
+                }
+
+                if (currentNode.getCity().equals(start)) {
+                    currentNeighbourPrice = iter.getActualPrice();
+                } else {
+                    currentNeighbourPrice = BigDecimal.valueOf(neighbourNode.getfCost()).add(iter.getActualPrice());
+                }
+
+                if (!toSearch.contains(neighbourNode) || currentNeighbourPrice.compareTo(neighbourNode.getgCost()) < 0) {
+                    neighbourNode.setgCost(currentNeighbourPrice);
+                    neighbourNode.setParent(currentNode);
+
+                    if (!toSearch.contains(neighbourNode)) {
+                        toSearch.add(neighbourNode);
+                    }
+                }
+            }
         }
+        throw new NoPathToDestinationException("There is no path satisfying the conditions");
     }
 }
