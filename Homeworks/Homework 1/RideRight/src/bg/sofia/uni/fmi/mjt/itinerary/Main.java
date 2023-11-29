@@ -6,6 +6,7 @@ import bg.sofia.uni.fmi.mjt.itinerary.graph.Graph;
 
 import javax.management.QueryEval;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -82,9 +83,12 @@ public class Main {
 //        Graph g1 = new Graph(schedule);
 
 //        System.out.println(g1.printGraph());
-        RideRight rideRight = new RideRight(schedule);
-        System.out.println(rideRight.findCheapestPath(sofia, varna, true));
+//        RideRight rideRight = new RideRight(schedule);
+//        System.out.println(rideRight.findCheapestPath(sofia, varna, true));
 //        System.out.println(rideRight.findCheapestPath(varna, burgas, false));
+        BigDecimal b1 = new BigDecimal(BigInteger.ZERO);
+        b1.add(BigDecimal.ONE);
+        System.out.println(b1);
 
 
     }

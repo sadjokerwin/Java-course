@@ -6,7 +6,16 @@ import bg.sofia.uni.fmi.mjt.itinerary.graph.Graph;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.Node;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.SequencedCollection;
+import java.util.Set;
 
 public class RideRight implements ItineraryPlanner {
     List<Journey> schedule;
@@ -49,24 +58,13 @@ public class RideRight implements ItineraryPlanner {
             toAdd = new Journey(destination.getTransportFromParent(), destination.getParent().getCity(), destination.getCity(), destination.getPriceFromParent());
             result.add(toAdd);
             System.out.println(toAdd.getActualPrice());
-            price.add(toAdd.getActualPrice());
+            price = price.add(toAdd.getActualPrice());
             destination = destination.getParent();
         }
 
         return new AbstractMap.SimpleEntry<>(price, result.reversed());
     }
 
-    /**
-     * Returns a sequenced collection of Journeys representing the cheapest path from the start to the destination City.
-     *
-     * @param start         - City, from which the itinerary begins
-     * @param destination   - the City that needs to be reached
-     * @param allowTransfer - a flag parameter whether multiple Journeys with transfer can be returned as a result, or
-     *                      only a direct route is expected
-     * @throws CityNotKnownException        if the start or destination City is not present
-     *                                      in the list of provided Journeys
-     * @throws NoPathToDestinationException if there is no path satisfying the conditions
-     */
     @Override
     public SequencedCollection<Journey> findCheapestPath(City start, City destination, boolean allowTransfer)
             throws CityNotKnownException, NoPathToDestinationException {
