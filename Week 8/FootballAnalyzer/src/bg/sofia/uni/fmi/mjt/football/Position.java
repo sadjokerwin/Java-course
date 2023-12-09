@@ -23,6 +23,7 @@ public enum Position {
     CB; // Centre Back
 
     private static final String PLAYER_STAT_DELIMETER = ",";
+
     public static List<Position> of(String data) {
         final String[] tokens = data.split(PLAYER_STAT_DELIMETER);
         List<Position> positions = new ArrayList<>();

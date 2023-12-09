@@ -1,4 +1,6 @@
+import bg.sofia.uni.fmi.mjt.football.FootballPlayerAnalyzer;
 import bg.sofia.uni.fmi.mjt.football.Player;
+import bg.sofia.uni.fmi.mjt.football.Position;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -17,17 +19,15 @@ public class Main {
         List<Player> players;
 //        System.out.println(System.getProperty("user.dir"));
         Reader dataInput = new FileReader("./FootballAnalyzer/src/fifa_players_clean.csv");
+        FootballPlayerAnalyzer analyzer = new FootballPlayerAnalyzer(dataInput);
+//        analyzer.getPlayersByFullNameKeyword("essi");
 
-
-        try (var reader = new BufferedReader(dataInput)) {
-            players = reader.lines().skip(1).map(Player::of).toList();
-        } catch (IOException e) {
-            throw new UncheckedIOException("A problem occurred while reading from the file", e);
-
-        }
-        System.out.println(players.stream()
-                .filter(player -> player.age()>28)
-                .map(Player::name)
-                .toList());
+        System.out.println(analyzer.getTopProspectPlayerForPositionInBudget(Position.RW, 10000000));
+//        return players.stream()
+//                .filter(playerLambda ->
+//                Math.abs(playerLambda.overallRating() - player.overallRating()) <= MAX_DIFFERENCE
+//                || playerLambda.preferredFoot().equals(player.preferredFoot())
+//                || playerLambda.positions().stream()
+//                .anyMatch(position -> player.positions().contains(position))).collect(Collectors.toSet());
     }
 }
