@@ -8,11 +8,6 @@ import java.io.UncheckedIOException;
 import java.nio.file.Path;
 
 public class ImageConverter {
-    private final Path imagePath;
-
-    public ImageConverter(Path imagePath) {
-        this.imagePath = imagePath;
-    }
 
     public Image loadImage(Path imagePath) {
         try {
