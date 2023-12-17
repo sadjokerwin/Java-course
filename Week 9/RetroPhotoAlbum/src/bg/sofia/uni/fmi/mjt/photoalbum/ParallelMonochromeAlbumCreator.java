@@ -3,31 +3,41 @@ package bg.sofia.uni.fmi.mjt.photoalbum;
 import bg.sofia.uni.fmi.mjt.photoalbum.image.Image;
 import bg.sofia.uni.fmi.mjt.photoalbum.image.ImageConverter;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayDeque;
-import java.util.Queue;
 
 public abstract class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
     private final int imageProcessorsCount;
-    private Queue<Image> notProcessedImages;
+    private Album album;
     private final ImageConverter imageConverter;
-    private Path destination;
+    private File destination;
     private int currentNumberOfThreads;
-    final int DEFAULT_NUMBER_ACTIVE_THREADS = 0;
 
     public ParallelMonochromeAlbumCreator(int imageProcessorsCount, String destination) {
         this.imageProcessorsCount = imageProcessorsCount;
-        this.notProcessedImages = new ArrayDeque<>();
         this.imageConverter = new ImageConverter();
-        this.currentNumberOfThreads = DEFAULT_NUMBER_ACTIVE_THREADS;
-
+        
         try {
             this.destination = Files.createDirectories(Path.of(destination));
         } catch (IOException e) {
 
             System.out.println("The directory couldn't be created");
+        }
+    }
+
+    public void imageParser() {
+        File[] directoryListing = destination.listFiles();
+        if (directoryListing != null) {
+            for (File child : directoryListing) {
+                if (child.toString().endsWith(JPEG_SUFFIX)
+                    || child.toString().endsWith(PNG_SUFFIX)
+                    || child.toString().endsWith(JPG_SUFFIX)) {
+                    Producer producer = new Producer(this);
+                    producer.start();
+                }
+            }
         }
     }
 
