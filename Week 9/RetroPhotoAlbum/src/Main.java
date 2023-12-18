@@ -1,28 +1,37 @@
-import bg.sofia.uni.fmi.mjt.photoalbum.image.Image;
-import bg.sofia.uni.fmi.mjt.photoalbum.image.ImageConverter;
-
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import bg.sofia.uni.fmi.mjt.photoalbum.ParallelMonochromeAlbumCreator;
 
 public class Main {
     public static void main(String[] args) {
-        Path path = new File("images/photo.jpeg").toPath();
+//        Path path = new File("D:/Photoshop/539966.jpg").toPath();
+//
+//        ImageConverter imageConverter = new ImageConverter(path);
+//        ImageConverter imageConverter = new ImageConverter();
+//
+//        Image loadedImage = imageConverter.loadImage(path);
+//        Image processedImage = imageConverter.convertToBlackAndWhite(loadedImage);
+//
+//        File outputPath = new File("images/out/" + processedImage.getName());
+//
+//        try {
+//            Files.createDirectories(Path.of("images/out"));
+//
+//            ImageIO.write(processedImage.getData(), "jpeg", outputPath);
+//        } catch (IOException e) {
+//            System.out.println("Failed to save image");
+//        }
 
-        ImageConverter imageConverter = new ImageConverter(path);
-        Image loadedImage = imageConverter.loadImage(path);
-        Image processedImage = imageConverter.convertToBlackAndWhite(loadedImage);
-
-        File outputPath = new File("images/out/" + processedImage.getName());
+        String path = "D:/Photoshop/";
 
         try {
-            Files.createDirectories(Path.of("images/out"));
-
-            ImageIO.write(processedImage.getData(), "jpeg", outputPath);
-        } catch (IOException e) {
-            System.out.println("Failed to save image");
+            ParallelMonochromeAlbumCreator par1 = new ParallelMonochromeAlbumCreator(3, "D:/University/Test", path);
+//            par1.printImages();
+            par1.processImages("a", "b");
+        } catch (Exception e) {
+            System.out.println(e);
         }
+
+//
+//        String test1 = "D:\\Photoshop\\539966.jpg";
+//        System.out.println(test1.endsWith(".jpg"));
     }
 }

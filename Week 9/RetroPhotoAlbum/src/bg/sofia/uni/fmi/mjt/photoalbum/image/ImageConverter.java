@@ -6,12 +6,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class ImageConverter {
+    private final File destinDir;
 
+    public ImageConverter(File destinDir) {
+        this.destinDir = destinDir;
+    }
     public Image loadImage(Path imagePath) {
         try {
             BufferedImage imageData = ImageIO.read(imagePath.toFile());
+//            System.out.println(imagePath.getFileName());
             return new Image(imagePath.getFileName().toString(), imageData);
         } catch (IOException e) {
             throw new UncheckedIOException(String.format("Failed to load image %s", imagePath.toString()), e);
@@ -26,14 +32,11 @@ public class ImageConverter {
         return new Image(image.name, processedData);
     }
 
-    public boolean writeImage(Image processedImage, String format, String outputPath) {
-        File outputDirectory = new File(outputPath);
-
+    public synchronized void writeImage(Image processedImage, String format) {
         try {
-            ImageIO.write(processedImage.getData(), format, outputDirectory);
+            ImageIO.write(processedImage.getData(), format, Paths.get(destinDir.toString(),processedImage.getName()).toFile());
         } catch (IOException e) {
-            return false;
+            System.out.println("Image couldn't be written");
         }
-        return false;
     }
 }

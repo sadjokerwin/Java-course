@@ -7,54 +7,72 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
-public abstract class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
+public class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
     private final int imageProcessorsCount;
     private Album album;
-    private final ImageConverter imageConverter;
-    private File destination;
+    private ImageConverter imageConverter;
     private int currentNumberOfThreads;
+    private final int MAX_THREADS = 5;
 
-    public ParallelMonochromeAlbumCreator(int imageProcessorsCount, String destination) {
-        this.imageProcessorsCount = imageProcessorsCount;
-        this.imageConverter = new ImageConverter();
-        
-        try {
-            this.destination = Files.createDirectories(Path.of(destination));
-        } catch (IOException e) {
+    public void imageParser(File directoryOfFiles) throws InterruptedException {
+        final String JPEG_SUFFIX = ".jpeg";
+        final String PNG_SUFFIX = ".jpg";
+        final String JPG_SUFFIX = ".png";
 
-            System.out.println("The directory couldn't be created");
-        }
-    }
+        File[] directoryListing = directoryOfFiles.listFiles();
 
-    public void imageParser() {
-        File[] directoryListing = destination.listFiles();
         if (directoryListing != null) {
             for (File child : directoryListing) {
                 if (child.toString().endsWith(JPEG_SUFFIX)
-                    || child.toString().endsWith(PNG_SUFFIX)
-                    || child.toString().endsWith(JPG_SUFFIX)) {
-                    Producer producer = new Producer(this);
+                        || child.toString().endsWith(PNG_SUFFIX)
+                        || child.toString().endsWith(JPG_SUFFIX)) {
+                    Producer producer = new Producer(album, imageConverter.loadImage(child.toPath()));
                     producer.start();
                 }
             }
         }
     }
 
-    public synchronized void processImage() throws InterruptedException {
-        if (!notProcessedImages.isEmpty()) {
-            Image current = notProcessedImages.poll();
+    public ParallelMonochromeAlbumCreator(int imageProcessorsCount, String destination, String directoryOfFiles) throws InterruptedException {
+        this.imageProcessorsCount = imageProcessorsCount;
+        album = new Album(new ArrayDeque<>());
 
-            imageConverter.convertToBlackAndWhite(current);
 
-            imageConverter.writeImage(current, current.getFormat(), destination.toString());
-        } else {
-            wait();
+        try {
+            File destinationDir = Files.createDirectories(Path.of(destination)).toFile();
+            this.imageConverter = new ImageConverter(destinationDir);
+        } catch (IOException e) {
+            System.out.println("The directory couldn't be created");
+        }
+
+
+        File directory = new File(directoryOfFiles);
+        imageParser(directory);
+
+
+    }
+
+    public void printImages() {
+        Queue<Image> result = album.getImages();
+//        System.out.println(result.size());
+        for (Image image : result) {
+            System.out.println(image.getName());
         }
     }
 
-    public synchronized void addImage(Image toAdd) {
-        notProcessedImages.add(toAdd);
-        notifyAll();
+    @Override
+    public void processImages(String sourceDirectory, String outputDirectory) {
+        while (!album.getImages().isEmpty()) {
+            // Check if a new consumer can be started
+            if (Consumer.canStartNew()) {
+                Consumer consumer = new Consumer(album, imageConverter);
+                consumer.start();
+            }
+        }
+
     }
+
 }

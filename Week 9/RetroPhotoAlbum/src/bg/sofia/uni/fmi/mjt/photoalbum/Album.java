@@ -1,25 +1,27 @@
 package bg.sofia.uni.fmi.mjt.photoalbum;
 
 import bg.sofia.uni.fmi.mjt.photoalbum.image.Image;
-import bg.sofia.uni.fmi.mjt.photoalbum.image.ImageConverter;
 
-import java.io.File;
 import java.util.Queue;
 
 public class Album {
     private Queue<Image> images;
-    private final String JPEG_SUFFIX = ".jpeg";
-    private final String PNG_SUFFIX = ".jpeg";
-    private final String JPG_SUFFIX = ".jpeg";
 
-    private ImageConverter imageConverter;
-
-    public Album(Queue<Image> images, String myDirectoryPath) {
+    public Album(Queue<Image> images) {
         this.images = images;
-        imageConverter = new ImageConverter();
     }
 
-//    public void processImages(File directory) {
+    public synchronized void addImage(Image toAdd) {
+//        System.out.println(1);
+        images.add(toAdd);
+        notifyAll();
+    }
+
+    public synchronized Queue<Image> getImages() {
+        return images;
+    }
+
+    //    public void processImages(File directory) {
 //        File[] directoryListing = directory.listFiles();
 //        if (directoryListing != null) {
 //            for (File child : directoryListing) {
@@ -43,9 +45,11 @@ public class Album {
 //            wait();
 //        }
 //    }
-
-    public synchronized void addImage(Image toAdd) {
-        images.add(toAdd);
-        notifyAll();
+    public synchronized Image getImage() throws InterruptedException {
+//        if (images.size() == 0) {
+//            wait();
+//        }
+        Image item = images.poll();
+        return item;
     }
 }

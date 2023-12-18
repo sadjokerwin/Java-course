@@ -12,9 +12,9 @@ public class Image implements Serializable {
     public Image(String name, BufferedImage data) {
         this.name = name;
         this.data = data;
-
-        String[] tokens = name.split(".");
-        this.imageFormat = tokens[FORMAT_INDEX];
+//        String[] tokens = name.split(".");
+//        this.imageFormat = tokens[FORMAT_INDEX];
+        this.imageFormat = "png";
     }
 
     public String getName() {
