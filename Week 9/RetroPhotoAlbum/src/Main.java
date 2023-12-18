@@ -23,9 +23,9 @@ public class Main {
         String path = "D:/Photoshop/";
 
         try {
-            ParallelMonochromeAlbumCreator par1 = new ParallelMonochromeAlbumCreator(3, "D:/University/Test", path);
+            ParallelMonochromeAlbumCreator par1 = new ParallelMonochromeAlbumCreator(5, "D:/University/Test", path);
 //            par1.printImages();
-            par1.processImages("a", "b");
+            par1.processImages("D:/Photoshop/", "D:/University/Test");
         } catch (Exception e) {
             System.out.println(e);
         }

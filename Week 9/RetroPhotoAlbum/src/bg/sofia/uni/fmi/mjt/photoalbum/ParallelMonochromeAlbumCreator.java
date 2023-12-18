@@ -15,7 +15,6 @@ public class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
     private Album album;
     private ImageConverter imageConverter;
     private int currentNumberOfThreads;
-    private final int MAX_THREADS = 5;
 
     public void imageParser(File directoryOfFiles) throws InterruptedException {
         final String JPEG_SUFFIX = ".jpeg";
@@ -27,8 +26,8 @@ public class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
         if (directoryListing != null) {
             for (File child : directoryListing) {
                 if (child.toString().endsWith(JPEG_SUFFIX)
-                        || child.toString().endsWith(PNG_SUFFIX)
-                        || child.toString().endsWith(JPG_SUFFIX)) {
+                    || child.toString().endsWith(PNG_SUFFIX)
+                    || child.toString().endsWith(JPG_SUFFIX)) {
                     Producer producer = new Producer(album, imageConverter.loadImage(child.toPath()));
                     producer.start();
                 }
@@ -36,10 +35,9 @@ public class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
         }
     }
 
-    public ParallelMonochromeAlbumCreator(int imageProcessorsCount, String destination, String directoryOfFiles) throws InterruptedException {
+    public ParallelMonochromeAlbumCreator(int imageProcessorsCount, String destination, String directoryOfFiles) {
         this.imageProcessorsCount = imageProcessorsCount;
         album = new Album(new ArrayDeque<>());
-
 
         try {
             File destinationDir = Files.createDirectories(Path.of(destination)).toFile();
@@ -47,12 +45,6 @@ public class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
         } catch (IOException e) {
             System.out.println("The directory couldn't be created");
         }
-
-
-        File directory = new File(directoryOfFiles);
-        imageParser(directory);
-
-
     }
 
     public void printImages() {
@@ -65,14 +57,19 @@ public class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
 
     @Override
     public void processImages(String sourceDirectory, String outputDirectory) {
+        File directory = new File(sourceDirectory);
+        try {
+            imageParser(directory);
+        } catch (InterruptedException e) {
+            System.out.println(e);
+        }
+
         while (!album.getImages().isEmpty()) {
             // Check if a new consumer can be started
             if (Consumer.canStartNew()) {
-                Consumer consumer = new Consumer(album, imageConverter);
+                Consumer consumer = new Consumer(album, imageConverter, imageProcessorsCount);
                 consumer.start();
             }
         }
-
     }
-
 }

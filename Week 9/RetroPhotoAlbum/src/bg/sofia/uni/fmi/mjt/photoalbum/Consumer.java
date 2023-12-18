@@ -6,13 +6,22 @@ import bg.sofia.uni.fmi.mjt.photoalbum.image.ImageConverter;
 public class Consumer extends Thread {
     private Image toAlter;
     private Album images;
-    private ImageConverter imageConverter;
+    private final ImageConverter imageConverter;
     private static int activeThreadsS = 0;
-    private static final int MAX_THREADS = 5;
+    private static int MAX_THREADS = 6;
 
-    public Consumer(Album images, ImageConverter imageConverter) {
+    private static synchronized void setMaxThreads(int value) {
+        MAX_THREADS = value;
+    }
+
+    public Consumer(Album images, ImageConverter imageConverter, int maxThreads) {
         this.images = images;
         this.imageConverter = imageConverter;
+//        synchronized (Consumer.class) {
+//            if (MAX_THREADS != maxThreads) {
+//                setMaxThreads(maxThreads);
+//            }
+//        }
     }
 
     public static boolean canStartNew() {
@@ -25,6 +34,9 @@ public class Consumer extends Thread {
     public void run() {
         try {
             synchronized (Consumer.class) {
+//                if (images.getImages().isEmpty()) {
+//                    wait();
+//                }
                 activeThreadsS++;
             }
 
