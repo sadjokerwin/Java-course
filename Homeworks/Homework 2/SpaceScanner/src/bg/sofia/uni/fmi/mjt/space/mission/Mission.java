@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.mjt.space.mission;
 
 import bg.sofia.uni.fmi.mjt.space.rocket.RocketStatus;
 
+import javax.swing.text.html.HTMLDocument;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -35,10 +36,14 @@ public record Mission(String id, String company, String location, LocalDate date
         if (cost.isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.of(Double.valueOf(cost.substring(1, cost.length() - 1).trim()));
+            return Optional.of(Double.valueOf(cost.substring(1, cost.length() - 1).trim().replace(",", "")));
         }
     }
 
+    public static String getCountry(String location) {
+        String[] tokens = location.split(",");
+        return tokens[tokens.length-1].trim();
+    }
     //
     public static Mission of(String data) {
         final String[] tokens = data.split(pattern);

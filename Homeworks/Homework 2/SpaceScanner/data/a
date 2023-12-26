@@ -1,0 +1,21 @@
+{JAXA=LA-Y1, Tanegashima Space Center, Japan,
+RVSN USSR=Site 110/37, Baikonur Cosmodrome, Kazakhstan,
+Northrop=LP-0A, Wallops Flight Facility, Virginia, USA,
+IRGC=Launch Plateform, Shahrud Missile Test Site,
+SpaceX=SLC-40, Cape Canaveral AFS, Florida, USA,
+ULA=SLC-41, Cape Canaveral AFS, Florida, USA,
+Rocket Lab=Rocket Lab LC-1A, M?hia Peninsula, New Zealand,
+MHI=LA-Y2, Tanegashima Space Center, Japan,
+IAI=Pad 1, Palmachim Airbase, Israel,
+VKS RF=Site 43/4, Plesetsk Cosmodrome, Russia,
+CASC=Site 9401 (SLS-2), Jiuquan Satellite Launch Center, China,
+ExPace=Site 95, Jiuquan Satellite Launch Center, China,
+Roscosmos=Site 31/6, Baikonur Cosmodrome, Kazakhstan,
+Virgin Orbit=Cosmic Girl, Mojave Air and Space Port, California, USA,
+Arianespace=ELA-3, Guiana Space Centre, French Guiana, France}
+
+[Mission[id=48, company=Arianespace, location=ELA-3, Guiana Space Centre, French Guiana, France, date=2020-02-18, detail=Detail[rocketName=Ariane 5 ECA,
+payload=JCSAT-17 & GEO-KOMPSAT 2], rocketStatus=StatusActive, cost=Optional[200.0], missionStatus=Success],
+Mission[id=38, company=ULA, location=SLC-41, Cape Canaveral AFS, Florida, USA, date=2020-03-26, detail=Detail[rocketName=Atlas V 551, payload=AEHF ], rocketStatus=StatusActive, cost=Optional[153.0], missionStatus=Success]]
+
+
