@@ -13,4 +13,13 @@ public enum RocketStatus {
     public String toString() {
         return value;
     }
+
+    public static RocketStatus fromString(String status) {
+        for (RocketStatus rocketStatus : RocketStatus.values()) {
+            if (rocketStatus.value.equals(status)) {
+                return rocketStatus;
+            }
+        }
+        throw new IllegalArgumentException("Invalid RocketStatus: " + status);
+    }
 }

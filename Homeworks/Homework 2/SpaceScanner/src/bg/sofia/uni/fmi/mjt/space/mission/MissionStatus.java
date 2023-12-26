@@ -15,4 +15,13 @@ public enum MissionStatus {
     public String toString() {
         return value;
     }
+
+    public static MissionStatus fromString(String status) {
+        for (MissionStatus missionStatus : MissionStatus.values()) {
+            if (missionStatus.value.equals(status)) {
+                return missionStatus;
+            }
+        }
+        throw new IllegalArgumentException("Invalid RocketStatus: " + status);
+    }
 }
