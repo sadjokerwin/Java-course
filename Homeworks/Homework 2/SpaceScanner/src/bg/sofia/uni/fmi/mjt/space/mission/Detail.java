@@ -9,4 +9,8 @@ public record Detail(String rocketName, String payload) {
         }
 
     }
+    public static Detail of(String data) {
+        String[] tokens = data.split("\\|");
+        return new Detail(tokens[0].substring(1).trim(), tokens[1].trim().substring(0, tokens[1].trim().length()-1));
+    }
 }

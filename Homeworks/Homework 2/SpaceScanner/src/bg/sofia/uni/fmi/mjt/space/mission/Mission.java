@@ -11,28 +11,44 @@ public record Mission(String id, String company, String location, LocalDate date
     private final static int ID = 0;
     private final static int COMPANY = 1;
     private final static int LOCATION_SITE = 2;
-    private final static int LOCATION_NAME = 3;
-    private final static int LOCATION_COUNTRY = 4;
-    private final static int DATE_NOYEAR = 5;
-    private final static int DATE_YEAR = 6;
-    private final static int ROCKET_NAME = 7;
-    private final static int PAYLOAD_FIRST = 8;
-    private final static int PAYLOAD_SECOND = 9;
-    private final static int ROCKET_STATUS = 9;
-    private final static int MISSION_COST = 10;
-    private final static int MISSION_STATUS = 11;
-    private final static int INDEX_IF_2_PAYLOADS = 1;
+    private final static int DATE = 3;
+    private final static int ROCKET_NAME_PAYLOAD = 4;
+    private final static int ROCKET_STATUS = 5;
+    private final static int MISSION_COST = 6;
+    private final static int MISSION_STATUS = 7;
+    private final static MonthConverter monthConverter = new MonthConverter();
 
 
-    public static LocalDate formatDate(String dateAndMonth, String year) {
+    public static LocalDate formatDate(String date) {
 //        Fri Aug 07, 2020
-        String[] dateAndMonthTokens = dateAndMonth.split(" ");
-        String month = dateAndMonthTokens[1];
-        String day = dateAndMonthTokens[2].substring(0, dateAndMonthTokens[2].length() - 1);
-        return LocalDate.parse(year + "-" + month + "-" + day);
+        String[] dateTokens = date.split(",");
+        String[] dateAndMonthTokens = dateTokens[0].split(" ");
+        String month = monthConverter.convert(dateAndMonthTokens[1]);
+
+        String day = dateAndMonthTokens[2];
+        dateTokens[1] = dateTokens[1].substring(1, 5);
+        return LocalDate.parse(dateTokens[1] + "-" + month + "-" + day);
     }
+
 //
-//    public static Mission of(String data) {
-//
-//    }
+    public static Mission of(String data) {
+        //10,Northrop,"LP-0B, Wallops Flight Facility, Virginia, USA","Wed Jul 15, 2020",Minotaur IV | NROL-129,StatusActive,"46.0 ",Success
+        //11,ExPace,"Site 95, Jiuquan Satellite Launch Center, China","Fri Jul 10, 2020","Kuaizhou 11 | Jilin-1 02E, CentiSpace-1 S2",StatusActive,"28.3 ",Failure
+        final String[] tokens = data.split(",");
+//        String id = tokens[ID];
+//        return new Mission(tokens[ID], tokens[COMPANY],
+//            tokens[LOCATION_SITE].substring(1) + ", "
+//                + tokens[LOCATION_NAME] + ", "
+//                + tokens[LOCATION_COUNTRY].substring(0, tokens[LOCATION_COUNTRY].length() - 1),
+//            formatDate(tokens[DATE_NOYEAR], tokens[DATE_YEAR]),
+//            new Detail(tokens[ROCKET_NAME], tokens[PAYLOAD_FIRST], tokens[PAYLOAD_SECOND]),
+//        return new Player(tokens[PLAYER_STAT_NAME], tokens[PLAYER_STAT_FULLNAME],
+//            formatDate(tokens[PLAYER_STAT_BIRTHDATE]), Integer.parseInt(tokens[PLAYER_STAT_AGE]),
+//            Double.parseDouble(tokens[PLAYER_STAT_HEIGHT]), Double.parseDouble(tokens[PLAYER_STAT_WEIGHT]),
+//            Position.of(tokens[PLAYER_STAT_POSITIONS]), tokens[PLAYER_STAT_NATIONALITY],
+//            Integer.parseInt(tokens[PLAYER_STAT_OVERALLRATING]), Integer.parseInt(tokens[PLAYER_STAT_POTENTIAL]),
+//            Long.parseLong(tokens[PLAYER_STAT_VALUE]), Long.parseLong(tokens[PLAYER_STAT_WAGE]),
+//            toEnum(tokens[PLAYER_STAT_FOOT]));
+            return null;
+    }
 }
