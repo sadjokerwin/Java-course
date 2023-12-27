@@ -7,7 +7,6 @@ public record Rocket(String id, String name, Optional<String> wiki, Optional<Dou
     private static final int NAME = 1;
     private static final int WIKI = 2;
     private static final int HEIGHT = 3;
-//    Double.valueOf(tokens[3].substring(0, tokens[3].length() - 2).trim())
 
     public Rocket {
         if (id == null || id.isEmpty()) {

@@ -2,7 +2,6 @@ package bg.sofia.uni.fmi.mjt.space.mission;
 
 import bg.sofia.uni.fmi.mjt.space.rocket.RocketStatus;
 
-import javax.swing.text.html.HTMLDocument;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -20,6 +19,23 @@ public record Mission(String id, String company, String location, LocalDate date
     private final static MonthConverter monthConverter = new MonthConverter();
     private final static String pattern = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
 
+    public Mission {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("Id is null or empty");
+        } else if (company == null || company.isEmpty()) {
+            throw new IllegalArgumentException("Company is null or empty");
+        } else if (location == null || location.isEmpty()) {
+            throw new IllegalArgumentException("Location is null or empty");
+        } else if (date == null) {
+            throw new IllegalArgumentException("Date is null");
+        } else if (detail == null) {
+            throw new IllegalArgumentException("Detail is null");
+        } else if (rocketStatus == null) {
+            throw new IllegalArgumentException("Rocket status is null");
+        } else if (missionStatus == null) {
+            throw new IllegalArgumentException("Mission status is null");
+        }
+    }
 
     public static LocalDate formatDate(String date) {
 //        Fri Aug 07, 2020
@@ -41,9 +57,13 @@ public record Mission(String id, String company, String location, LocalDate date
     }
 
     public static String getCountry(String location) {
+        if (location == null || location.isEmpty()) {
+            throw new IllegalArgumentException("Location is null or empty");
+        }
         String[] tokens = location.split(",");
-        return tokens[tokens.length-1].trim();
+        return tokens[tokens.length - 1].trim();
     }
+
     //
     public static Mission of(String data) {
         final String[] tokens = data.split(pattern);

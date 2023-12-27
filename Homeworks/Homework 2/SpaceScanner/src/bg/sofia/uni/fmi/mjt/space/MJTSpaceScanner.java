@@ -18,15 +18,17 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public abstract class MJTSpaceScanner implements SpaceScannerAPI {
+public class MJTSpaceScanner implements SpaceScannerAPI {
 
     private final List<Mission> missions;
     private final List<Rocket> rockets;
+    SecretKey secretKey;
 
     public MJTSpaceScanner(Reader missionsReader, Reader rocketsReader, SecretKey secretKey) {
         try (var readerBuffer = new BufferedReader(missionsReader)) {
@@ -40,6 +42,8 @@ public abstract class MJTSpaceScanner implements SpaceScannerAPI {
         } catch (IOException e) {
             throw new UncheckedIOException("A problem occurred while reading from the file", e);
         }
+
+        this.secretKey = secretKey;
     }
 
     /**
@@ -158,9 +162,6 @@ public abstract class MJTSpaceScanner implements SpaceScannerAPI {
      */
     @Override
     public Map<String, String> getMostDesiredLocationForMissionsPerCompany() {
-//        return missions.stream().collect(Collectors.groupingBy(mission -> Mission.getCountry(mission.location()), Collectors.toCollection(
-//            ArrayList::new)));
-
         Map<String, List<String>> helper = missions.stream().collect(
             Collectors.groupingBy(Mission::company, Collectors.mapping(Mission::location, Collectors.toList())));
 
@@ -190,6 +191,8 @@ public abstract class MJTSpaceScanner implements SpaceScannerAPI {
 
         Map<String, List<String>> helper =
             missions.stream().filter(mission -> mission.missionStatus().equals(MissionStatus.SUCCESS))
+                .filter(mission -> mission.date().isAfter(from) && mission.date().isBefore(to)
+                    || mission.date().equals(from) || mission.date().equals(to))
                 .collect(
                     Collectors.groupingBy(Mission::company,
                         Collectors.mapping(Mission::location, Collectors.toList())));
@@ -279,6 +282,39 @@ public abstract class MJTSpaceScanner implements SpaceScannerAPI {
             .toList();
     }
 
+    public String returnMostReliableRocket(OutputStream outputStream, LocalDate from, LocalDate to) {
+        if (outputStream == null) {
+            throw new IllegalArgumentException("Output stream is null");
+        } else if (from == null || to == null) {
+            throw new IllegalArgumentException("From or to is null");
+        } else if (to.isBefore(from)) {
+            throw new TimeFrameMismatchException("To date is before from data");
+        }
+
+        Map<String, Long> helper = rockets.stream()
+            .collect(Collectors.toMap(rocket -> rocket.name(), rocket -> 0L));
+
+        Map<String, Long> missionCountForRocket = missions.stream()
+            .collect(Collectors.groupingBy(mission -> mission.detail().rocketName(), Collectors.counting()));
+
+        Map<String, Long> mostReliableRocketHelper = missions.stream()
+            .collect(Collectors.groupingBy(mission -> mission.detail().rocketName(),
+                Collectors.summingLong(mission -> mission.missionStatus().equals(MissionStatus.SUCCESS) ? 2 : 1)));
+
+        Map<String, Double> mostReliableRocket = new HashMap<>();
+        mostReliableRocketHelper.forEach((rocketName, count) -> {
+            Long totalMissions = missionCountForRocket.getOrDefault(rocketName, 1L); // Avoid division by zero
+            double reliability = (double) count / totalMissions;
+            mostReliableRocket.put(rocketName, reliability);
+        });
+
+        Map.Entry<String, Double> bestRocketEntry = mostReliableRocket.entrySet().stream()
+            .max(Map.Entry.comparingByValue())
+            .orElse(null);
+
+        return bestRocketEntry.getKey();
+    }
+
     /**
      * Saves the name of the most reliable rocket in a given time period in an encrypted format.
      *
@@ -297,6 +333,36 @@ public abstract class MJTSpaceScanner implements SpaceScannerAPI {
             throw new IllegalArgumentException("From or to is null");
         } else if (to.isBefore(from)) {
             throw new TimeFrameMismatchException("To date is before from data");
+        }
+
+        Map<String, Long> helper = rockets.stream()
+            .collect(Collectors.toMap(rocket -> rocket.name(), rocket -> 0L));
+
+        Map<String, Long> missionCountForRocket = missions.stream()
+            .collect(Collectors.groupingBy(mission -> mission.detail().rocketName(), Collectors.counting()));
+
+        Map<String, Long> mostReliableRocketHelper = missions.stream()
+            .collect(Collectors.groupingBy(mission -> mission.detail().rocketName(),
+                Collectors.summingLong(mission -> mission.missionStatus().equals(MissionStatus.SUCCESS) ? 2 : 1)));
+
+        Map<String, Double> mostReliableRocket = new HashMap<>();
+        mostReliableRocketHelper.forEach((rocketName, count) -> {
+            Long totalMissions = missionCountForRocket.getOrDefault(rocketName, 1L); // Avoid division by zero
+            double reliability = (double) count / totalMissions;
+            mostReliableRocket.put(rocketName, reliability);
+        });
+
+        Map.Entry<String, Double> bestRocketEntry = mostReliableRocket.entrySet().stream()
+            .max(Map.Entry.comparingByValue())
+            .orElse(null);
+
+        if (bestRocketEntry != null) {
+            byte[] bytes = bestRocketEntry.getKey().getBytes();
+            try {
+                outputStream.write(bytes);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
