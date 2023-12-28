@@ -1,8 +1,9 @@
-package bg.sofia.uni.fmi.mjt.photoalbum;
+package bg.sofia.uni.fmi.mjt.photoalbum.album;
 
 import bg.sofia.uni.fmi.mjt.photoalbum.image.Image;
 
 import java.util.Queue;
+
 public class Album {
     private Queue<Image> images;
 
@@ -15,11 +16,10 @@ public class Album {
         notifyAll();
     }
 
-    public synchronized Queue<Image> getImages() {
-        return images;
-    }
-
     public synchronized Image getImage() throws InterruptedException {
+        while (images.isEmpty()) {
+            wait();
+        }
         return images.poll();
     }
 }

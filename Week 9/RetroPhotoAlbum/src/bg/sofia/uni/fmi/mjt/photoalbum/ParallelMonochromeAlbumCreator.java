@@ -8,11 +8,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
+import java.util.LinkedList;
 import java.util.Queue;
 
 public class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
     private final int imageProcessorsCount;
     private Album album;
+    private Queue<Image> images = new LinkedList<>();
     private ImageConverter imageConverter;
     private int currentNumberOfThreads;
 
