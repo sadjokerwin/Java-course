@@ -15,4 +15,22 @@ public enum Destination {
     public String getName() {
         return name;
     }
+
+    public static Destination getDestination(String name) {
+        for (Destination destination : Destination.values()) {
+            if (destination.getName().equals(name)) {
+                return destination;
+            }
+        }
+        return UNKNOWN;
+    }
+
+    public static boolean contains(String name) {
+        for (Destination destination : Destination.values()) {
+            if (destination.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

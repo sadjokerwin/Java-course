@@ -5,9 +5,7 @@ import bg.sofia.uni.fmi.mjt.photoalbum.album.Album;
 public class Consumer extends Thread {
 
     private Album imagesAlbum;
-
     private boolean running = true;
-
     public Consumer(Album imagesAlbum) {
         this.imagesAlbum = imagesAlbum;
     }
@@ -25,12 +23,11 @@ public class Consumer extends Thread {
                 break;
             }
             try {
-               imagesAlbum.getImage();
+                imagesAlbum.getImage();
             } catch (InterruptedException e) {
                 break;
             }
         }
-
     }
 
     public void stopConsuming() {

@@ -5,7 +5,6 @@ import bg.sofia.uni.fmi.mjt.photoalbum.image.Image;
 
 public class Producer extends Thread {
     private Album imagesAlbum;
-
     private Image imageToAdd;
 
     public Producer(Album imagesAlbum, Image imageToAdd) {
@@ -17,7 +16,6 @@ public class Producer extends Thread {
     public void run() {
         imagesAlbum.addImage(imageToAdd);
     }
-
 
 
 }

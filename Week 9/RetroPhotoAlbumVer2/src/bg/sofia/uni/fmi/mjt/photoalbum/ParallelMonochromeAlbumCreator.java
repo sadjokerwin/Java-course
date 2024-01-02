@@ -50,6 +50,7 @@ public class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
             }
         }
     }
+
     @Override
     public void processImages(String source, String destination) {
         for (int i = 0; i < 5; i++) {
@@ -68,9 +69,6 @@ public class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
         }
 
         album.setProducerFinished();
-
-
-
 
 
     }

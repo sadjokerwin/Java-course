@@ -15,4 +15,22 @@ public enum Color {
     public String getName() {
         return name;
     }
+
+    public static Color getSize(String name) {
+        for (Color color : Color.values()) {
+            if (color.getName().equals(name)) {
+                return color;
+            }
+        }
+        return UNKNOWN;
+    }
+
+    public static boolean contains(String name) {
+        for (Color color : Color.values()) {
+            if (color.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
