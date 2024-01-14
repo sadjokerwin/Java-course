@@ -1,9 +1,8 @@
 package bg.sofia.uni.fmi.mjt.cooking.dataparser;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import bg.sofia.uni.fmi.mjt.cooking.exception.NotSupportedDietTypeException;
+
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class CommandBuilder {
@@ -45,15 +44,65 @@ public class CommandBuilder {
             add("wheat-free");
         }
     };
-    private static Set valid
+    private static Set validMealTypes = new HashSet<>() {
+        {
+            add("breakfast");
+            add("brunch");
+            add("lunch/dinner");
+            add("snack");
+            add("teatime");
+        }
+    };
+
+    public String constructDietType(String scannerDietTypesLine) {
+        String[] dietTokens = scannerDietTypesLine.split(" ");
+
+        StringBuilder dietTypesResult = new StringBuilder();
+
+        for (String iter : dietTokens) {
+            if (validDietTypes.contains(iter)) {
+                dietTypesResult.append("&health=");
+                dietTypesResult.append(iter);
+            } else {
+                throw new NotSupportedDietTypeException(iter + "isn't a supported diet type");
+            }
+        }
+
+        return dietTypesResult.toString();
+    }
+
+    public String constructMealType(String scannerMealTypesLine) {
+        String[] mealTokens = scannerMealTypesLine.split(" ");
+
+        StringBuilder mealTypesResult = new StringBuilder();
+
+        for (String iter : mealTokens) {
+            if (validMealTypes.contains(iter)) {
+                mealTypesResult.append("&mealType=");
+                mealTypesResult.append(iter);
+            } else {
+                throw new NotSupportedDietTypeException(iter + "isn't a supported meal type");
+            }
+        }
+
+        return mealTypesResult.toString();
+    }
+
+    public String constructTags(String scannerTagsLine) {
+        String[] tagTokens = scannerTagsLine.split(" ");
+
+        StringBuilder tagResult = new StringBuilder();
+        for (String iter : tagTokens) {
+            tagResult.append("&tag=");
+            tagResult.append(iter);
+        }
+
+        return tagResult.toString();
+    }
+
 
     public void func1() {
         System.out.println();
     }
-//        celery-free  crustacean-free  dairy-free  DASH  egg-free
-//        fish-free  fodmap-free   gluten-free  immuno-supportive  keto-friendly  kidney-friendly  kosher
-//        low-potassium  low-sugar  lupine-free  Mediterranean  mollusk-free  mustard-free  No-oil-added
-//        paleo  peanut-free  pecatarian  pork-free  red-meat-free  sesame-free  shellfish-free  soy-free
-//        sugar-conscious  sulfite-free  tree-nut-free  vegan  vegetarian wheat-free
 }
 

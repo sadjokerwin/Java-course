@@ -1,3 +1,4 @@
+import bg.sofia.uni.fmi.mjt.cooking.recipe.Recipe;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -886,14 +887,17 @@ fish-free  fodmap-free   gluten-free  immuno-supportive  keto-friendly  kidney-f
 //                JsonObject hitObject = hitsArray.get(i).getAsJsonObject();
                 JsonObject hitObject = hitsArray.get(i).getAsJsonObject();
                 JsonObject recipeObject = hitObject.getAsJsonObject("recipe");
-                System.out.println(recipeObject.get("label"));
-                System.out.println(recipeObject.get("dietLabels"));
-                System.out.println(recipeObject.get("healthLabels"));
-                System.out.println(recipeObject.get("totalWeight"));
-                System.out.println(recipeObject.get("cuisineType"));
-                System.out.println(recipeObject.get("mealType"));
-                System.out.println(recipeObject.get("dishType"));
-                System.out.println(recipeObject.get("ingredientLines"));
+
+                Recipe recipe = gson.fromJson(recipeObject.toString(), Recipe.class);
+                System.out.println(recipe.toString());
+//                System.out.println(recipeObject.get("label"));
+//                System.out.println(recipeObject.get("dietLabels"));
+//                System.out.println(recipeObject.get("healthLabels"));
+//                System.out.println(recipeObject.get("totalWeight"));
+//                System.out.println(recipeObject.get("cuisineType"));
+//                System.out.println(recipeObject.get("mealType"));
+//                System.out.println(recipeObject.get("dishType"));
+//                System.out.println(recipeObject.get("ingredientLines"));
 
                 System.out.println('\n');
             }
