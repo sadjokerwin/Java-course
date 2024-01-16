@@ -6,26 +6,68 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
 public class JsonDataParser {
-    private final String response;
-
+    private final HttpResponse<String> responseFirstPage;
+    private final HttpResponse<String> responseSecondPage;
     private final Gson gson;
+    private final JsonObject jsonObjectFirstPage;
+    private final JsonObject jsonObjectSecondPage;
 
-    private final JsonObject jsonObject;
 
-    public JsonDataParser(String response) {
-        this.response = response;
+    public JsonDataParser(HttpResponse<String> responseFirstPage, HttpResponse<String> responseSecondPage) {
+        this.responseFirstPage = responseFirstPage;
+        this.responseSecondPage = responseSecondPage;
         gson = new GsonBuilder().setLenient().create();
-        jsonObject = gson.fromJson(response, JsonObject.class);
+
+        jsonObjectFirstPage = gson.fromJson(responseFirstPage.body(), JsonObject.class);
+
+        if (responseSecondPage == null) {
+            jsonObjectSecondPage = null;
+            return;
+        }
+        jsonObjectSecondPage = gson.fromJson(responseSecondPage.body(), JsonObject.class);
+    }
+
+    public void createRecipes(List<Recipe> result, int page) {
+        JsonObject object;
+
+        if (page == 1) {
+            object = jsonObjectFirstPage;
+        } else if (responseSecondPage == null) {
+            return;
+        } else {
+            object = jsonObjectSecondPage;
+        }
+
+        JsonArray hits = object.getAsJsonArray("hits");
+
+        if (hits.isEmpty()) {
+            return;
+        }
+
+        for (
+            int i = 0; i < hits.size(); i++) {
+            JsonObject hitObject = hits.get(i).getAsJsonObject();
+            JsonObject recipeObject = hitObject.getAsJsonObject("recipe");
+            Recipe recipe = gson.fromJson(recipeObject.toString(), Recipe.class);
+            result.add(recipe);
+        }
     }
 
     public List<Recipe> createRecipes() {
-        JsonArray hits = jsonObject.getAsJsonArray("hits");
-
         List<Recipe> result = new ArrayList<>();
+
+        createRecipes(result, 1);
+        createRecipes(result, 2);
+/*
+        JsonArray hits = jsonObjectFirstPage.getAsJsonArray("hits");
+
+        System.out.println(hits.size());
+
 
         if (hits.isEmpty()) {
             return result;
@@ -39,6 +81,23 @@ public class JsonDataParser {
 
             result.add(recipe);
         }
+
+        hits = jsonObjectSecondPage.getAsJsonArray("hits");
+
+        System.out.println(hits.size());
+
+        if (hits.isEmpty()) {
+            return result;
+        }
+
+        for (int i = 0; i < hits.size(); i++) {
+            JsonObject hitObject = hits.get(i).getAsJsonObject();
+            JsonObject recipeObject = hitObject.getAsJsonObject("recipe");
+
+            Recipe recipe = gson.fromJson(recipeObject.toString(), Recipe.class);
+
+            result.add(recipe);
+        }*/
 /*
             for (int i = 0; i < hitsArray.size(); i++) {
 //                JsonObject hitObject = hitsArray.get(i).getAsJsonObject();
@@ -55,7 +114,6 @@ public class JsonDataParser {
 
                 System.out.println('\n');
             }*/
-
         return result;
     }
 

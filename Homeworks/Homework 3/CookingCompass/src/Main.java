@@ -1,23 +1,9 @@
-import bg.sofia.uni.fmi.mjt.cooking.recipe.Recipe;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
+import bg.sofia.uni.fmi.mjt.cooking.javaclient.JavaClient;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 public class Main {
-    List<String> validDietTypes = new ArrayList<>() {
+   /* List<String> validDietTypes = new ArrayList<>() {
         {
             add("alcohol-cocktail");
             add("alcohol-free");
@@ -58,28 +44,27 @@ public class Main {
 fish-free  fodmap-free   gluten-free  immuno-supportive  keto-friendly  kidney-friendly  kosher
  low-potassium  low-sugar  lupine-free  Mediterranean  mollusk-free  mustard-free  No-oil-added
   paleo  peanut-free  pecatarian  pork-free  red-meat-free  sesame-free  shellfish-free  soy-free
-   sugar-conscious  sulfite-free  tree-nut-free  vegan  vegetarian wheat-free*/
+   sugar-conscious  sulfite-free  tree-nut-free  vegan  vegetarian wheat-free
 
         }
-    };
+    };*/
 
     public static void main(String[] args) {
+/*
+//        HttpClient client = HttpClient.newBuilder().build();
 
-        HttpClient client = HttpClient.newBuilder().build();
-
-        String health = "wheat-free";
+        /*String health = "wheat-free";
         String type = "Dinner";
 
         String appId = "77f6f16b";
         String appKey = "935af6a49a4bb529045fc619845bb7b3";
+//        JavaClient j1 = new JavaClient();
 
-        Scanner s1 = new Scanner(System.in);
+       Scanner s1 = new Scanner(System.in);
         System.out.println("Enter the diet types you want to search for: ");
-        String dietTypes = "";
-        dietTypes = s1.nextLine();
-        String[] dietTokens = dietTypes.split(" ");
+        String dietTypes = s1.nextLine();
 
-        String dietType = new Main().constructDietType(dietTokens);
+        System.out.println("Enter the meal types you want to search for: ");
 
         System.out.println(dietType);
 
@@ -87,18 +72,19 @@ fish-free  fodmap-free   gluten-free  immuno-supportive  keto-friendly  kidney-f
         URI uri = URI.create("https://api.edamam.com/api/recipes/v2?type=public&app_id=" + appId + "&app_key=" + appKey
             + dietType + "&mealType=" + type);
 
+
         // Create HttpClient
-        HttpClient httpClient = HttpClient.newHttpClient();
+//       / HttpClient httpClient = HttpClient.newHttpClient();
 
         // Create HttpRequest
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(uri)
-            .header("Accept", "application/json")
-            .header("Accept-Language", "en")
-            .build();
+//        HttpRequest request = HttpRequest.newBuilder()
+//            .uri(j1.initURI())
+//            .header("Accept", "application/json")
+//            .header("Accept-Language", "en")
+//            .build();
 //
 //        System.out.println(uri.toString());
-
+*/
 /*String jsonString2 = "{\n" +
     "    \"uri\": \"http://www.edamam.com/ontologies/edamam.owl#recipe_e4f821c4563a12e2a9ee24ba48ae2c4e\",\n" +
     "    \"label\": \"Quick Zucchini Sauté\",\n" +
@@ -853,43 +839,43 @@ fish-free  fodmap-free   gluten-free  immuno-supportive  keto-friendly  kidney-f
     "        \"unit\": \"g\"\n" +
     "      }]" +
     "}";*/
-
-        try {
-            // Send the request and retrieve the response
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+/*
+//        try {
+//            // Send the request and retrieve the response
+//            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
 ////            String jsonPretty = gson.fromJson(response.body(), String.class);
 ////
 ////            List<Recipe> recipes = recipeList.getHits().stream()
 ////                .map(Hit::getRecipe)
 ////                .collect(Collectors.toList());
-            // Print the response body
+        // Print the response body
 
-            Gson gson = new GsonBuilder().setLenient().create();
+//            Gson gson = new GsonBuilder().setLenient().create();
 
 //            Recipe recipe = gson.fromJson(response.toString(), Recipe.class);
 //            System.out.println(recipe.getLabel());
 //            System.out.println(recipe.getHealthLabels());
 
-            System.out.println("Response Code: " + response.statusCode());
+//            System.out.println("Response Code: " + response.statusCode());
 //            System.out.println("Response Body: " + response.body());
 
-            JsonObject jsonObject = gson.fromJson(response.body(), JsonObject.class);
+//            JsonObject jsonObject = gson.fromJson(response.body(), JsonObject.class);
 
 //            JsonObject jsonObject = jsonReader.parseString(response.toString()).getAsJsonObject();
 
-            // Get the "hits" array
-            JsonArray hitsArray = jsonObject.getAsJsonArray("hits");
+        // Get the "hits" array
+//            JsonArray hitsArray = jsonObject.getAsJsonArray("hits");
 
-            System.out.println(hitsArray.size());
+//            System.out.println(hitsArray.size());
 
-            for (int i = 0; i < hitsArray.size(); i++) {
+//            for (int i = 0; i < hitsArray.size(); i++) {
+////                JsonObject hitObject = hitsArray.get(i).getAsJsonObject();
 //                JsonObject hitObject = hitsArray.get(i).getAsJsonObject();
-                JsonObject hitObject = hitsArray.get(i).getAsJsonObject();
-                JsonObject recipeObject = hitObject.getAsJsonObject("recipe");
+//                JsonObject recipeObject = hitObject.getAsJsonObject("recipe");
 
-                Recipe recipe = gson.fromJson(recipeObject.toString(), Recipe.class);
-                System.out.println(recipe.toString());
+//                Recipe recipe = gson.fromJson(recipeObject.toString(), Recipe.class);
+//                System.out.println(recipe.toString());
 //                System.out.println(recipeObject.get("label"));
 //                System.out.println(recipeObject.get("dietLabels"));
 //                System.out.println(recipeObject.get("healthLabels"));
@@ -899,31 +885,30 @@ fish-free  fodmap-free   gluten-free  immuno-supportive  keto-friendly  kidney-f
 //                System.out.println(recipeObject.get("dishType"));
 //                System.out.println(recipeObject.get("ingredientLines"));
 
-                System.out.println('\n');
-            }
+//                System.out.println('\n');
+//            }
 
 
-////            System.out.println("Response Body: " + jsonPretty);
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+//////            System.out.println("Response Body: " + jsonPretty);
+//        } catch (IOException | InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+        //String[] validDataTypes = new String[]{"alcohol-free", "celery-free", "crustacean-free", "dairy-free", "egg-free", "fish-free",
+        //    "fodmap-free", "gluten-free", "immuno-supportive", "keto-friendly", "kidney-friendly", "kosher", "low-fat-abs",
+        //    "low-potassium", "low-sugar", "lupine-free", "Mediterranean", "mollusk-free", "mustard-free", "no-oil-added", "paleo",
+        //    "peanut-free", "pescatarian", "pork-free", "red-meat-free", "sesame-free", "shellfish-free", "soy-free", "sugar-conscious",
+        //    "sulfite-free", "tree-nut-free", "vegan", "vegetarian", "wheat-free"};
+*/
+
+        JavaClient javaClient = new JavaClient();
+        try {
+            javaClient.runClass();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
-    }
-
-    //String[] validDataTypes = new String[]{"alcohol-free", "celery-free", "crustacean-free", "dairy-free", "egg-free", "fish-free",
-    //    "fodmap-free", "gluten-free", "immuno-supportive", "keto-friendly", "kidney-friendly", "kosher", "low-fat-abs",
-    //    "low-potassium", "low-sugar", "lupine-free", "Mediterranean", "mollusk-free", "mustard-free", "no-oil-added", "paleo",
-    //    "peanut-free", "pescatarian", "pork-free", "red-meat-free", "sesame-free", "shellfish-free", "soy-free", "sugar-conscious",
-    //    "sulfite-free", "tree-nut-free", "vegan", "vegetarian", "wheat-free"};
-    String constructDietType(String[] dietTokens) {
-        StringBuilder s1 = new StringBuilder();
-
-        for (String iter : dietTokens) {
-            if (validDietTypes.contains(iter)) {
-                s1.append("&health=");
-                s1.append(iter);
-            }
-        }
-
-        return s1.toString();
     }
 }
