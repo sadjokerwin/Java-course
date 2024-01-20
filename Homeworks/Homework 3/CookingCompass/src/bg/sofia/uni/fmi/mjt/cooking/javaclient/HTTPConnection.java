@@ -23,9 +23,6 @@ public class HTTPConnection {
         try {
             // Send the request and retrieve the response
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("Response Code: " + response.statusCode());
-//            System.out.println("Response Body: " + response.body());
-
             return response;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

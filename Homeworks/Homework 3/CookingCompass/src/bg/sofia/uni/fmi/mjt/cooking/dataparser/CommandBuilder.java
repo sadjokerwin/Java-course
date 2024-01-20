@@ -1,6 +1,7 @@
 package bg.sofia.uni.fmi.mjt.cooking.dataparser;
 
 import bg.sofia.uni.fmi.mjt.cooking.exception.NotSupportedDietTypeException;
+import bg.sofia.uni.fmi.mjt.cooking.exception.NotSupportedMealTypeException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -55,6 +56,10 @@ public class CommandBuilder {
     };
 
     public String constructDietType(String scannerDietTypesLine) {
+        if (scannerDietTypesLine.isEmpty()) {
+            return "";
+        }
+
         String[] dietTokens = scannerDietTypesLine.split(" ");
 
         StringBuilder dietTypesResult = new StringBuilder();
@@ -64,7 +69,7 @@ public class CommandBuilder {
                 dietTypesResult.append("&health=");
                 dietTypesResult.append(iter);
             } else {
-                throw new NotSupportedDietTypeException(iter + "isn't a supported diet type");
+                throw new NotSupportedDietTypeException(iter + " isn't a supported diet type");
             }
         }
 
@@ -72,6 +77,10 @@ public class CommandBuilder {
     }
 
     public String constructMealType(String scannerMealTypesLine) {
+        if (scannerMealTypesLine.isEmpty()) {
+            return "";
+        }
+
         String[] mealTokens = scannerMealTypesLine.split(" ");
 
         StringBuilder mealTypesResult = new StringBuilder();
@@ -81,7 +90,7 @@ public class CommandBuilder {
                 mealTypesResult.append("&mealType=");
                 mealTypesResult.append(iter);
             } else {
-                throw new NotSupportedDietTypeException(iter + "isn't a supported meal type");
+                throw new NotSupportedMealTypeException(iter + "isn't a supported meal type");
             }
         }
 
@@ -89,6 +98,10 @@ public class CommandBuilder {
     }
 
     public String constructTags(String scannerTagsLine) {
+        if (scannerTagsLine.isEmpty()) {
+            return "";
+        }
+
         String[] tagTokens = scannerTagsLine.split(" ");
 
         StringBuilder tagResult = new StringBuilder();
@@ -98,11 +111,6 @@ public class CommandBuilder {
         }
 
         return tagResult.toString();
-    }
-
-
-    public void func1() {
-        System.out.println();
     }
 }
 

@@ -902,13 +902,6 @@ fish-free  fodmap-free   gluten-free  immuno-supportive  keto-friendly  kidney-f
         //    "sulfite-free", "tree-nut-free", "vegan", "vegetarian", "wheat-free"};
 */
 
-        JavaClient javaClient = new JavaClient();
-        try {
-            javaClient.runClass();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        System.out.println("Hello World!");
     }
 }
